@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 256 256">
+  <title>Alice Midnight Obsidian icon</title>
+  <defs>
+    <linearGradient id="tile" x2="85%" y2="100%" gradientUnits="objectBoundingBox">
+      <stop stop-color="#30354b"/>
+      <stop offset="1" stop-color="#131521"/>
+    </linearGradient>
+    <linearGradient id="silk" x2="65%" y2="100%" gradientUnits="objectBoundingBox">
+      <stop stop-color="#d4f5ff"/>
+      <stop offset=".47" stop-color="#65baff"/>
+      <stop offset="1" stop-color="#3778d6"/>
+    </linearGradient>
+    <linearGradient id="apron" x2="35%" y2="100%" gradientUnits="objectBoundingBox">
+      <stop stop-color="#fffdf4"/>
+      <stop offset="1" stop-color="#e7e1df"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="15" y="17" width="226" height="229" rx="55" fill="#0a0b12" opacity=".55"/>
+  <rect x="15" y="12" width="226" height="226" rx="55" fill="url(#tile)" stroke="#50546a" stroke-width="1.5"/>
+
+  <!-- The crystal silhouette doubles as a flared skirt. -->
+  <path d="M142 39 178 81 170 111 190 168 153 217 90 190 62 158 78 97 99 58Z"
+        fill="#0b1024" stroke="#0b1024" stroke-width="8" stroke-linejoin="round" opacity=".48"/>
+  <path d="M142 32 178 74 170 104 190 161 153 210 90 183 62 151 78 90 99 51Z"
+        fill="url(#silk)" stroke="#7ec9ff" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="m142 32 36 42-8 30-32-20Z" fill="#4686da"/>
+  <path d="m170 104 20 57-37 49 4-66Z" fill="#294eab"/>
+  <path d="m62 151 50 18 41 41-63-27Z" fill="#3065bb"/>
+  <path d="m78 90 21-39 43-19-32 36Z" fill="#b2eaff"/>
+  <path d="m62 151 28-23 20-60-32 22Z" fill="#72c7ff"/>
+  <path d="m112 169 45-25-4 66Z" fill="#4286e5"/>
+
+  <!-- Warm-white pinafore with a single folded facet. -->
+  <path d="m108 81 11-8 26 5 9 13-12 27 21 39-30 22-43-14 22-48Z"
+        fill="url(#apron)" stroke="#b9d4ef" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="m125 119 8 60 30-22-21-39Z" fill="#c8d2e4"/>
+  <path d="m112 113 31 1-1 7-31-1Z" fill="#fff9ed"/>
+
+  <!-- Black ribbon at the collar. -->
+  <path d="M124 81C116 80 106 72 107 66c1-7 13-3 23 3 10-6 22-10 23-3 1 6-9 14-17 15l7 13-12-5-9 6 2-14Z"
+        fill="#191923" stroke="#32364a" stroke-width="1.5" stroke-linejoin="round"/>
+  <rect x="125" y="69" width="11" height="9" rx="3.5" fill="#434256"/>
+
+  <path d="M193 83c0 9 3 12 12 12-9 0-12 3-12 12 0-9-3-12-12-12 9 0 12-3 12-12ZM63 70c0 6 2 8 8 8-6 0-8 2-8 8 0-6-2-8-8-8 6 0 8-2 8-8Z" fill="#ffd16a"/>
+</svg>
