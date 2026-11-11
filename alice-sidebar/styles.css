@@ -1,0 +1,134 @@
+.alice-sidebar {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 8px;
+}
+
+/* Decorative background stays outside the document list layout. */
+.alice-sidebar::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 8px;
+  right: 8px;
+  height: 150px;
+  z-index: -1;
+  background: center / contain no-repeat url("./assets/march-hare.svg");
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.alice-sidebar-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  overflow-y: auto;
+  min-width: 0;
+  min-height: 0;
+  scrollbar-width: none;
+}
+
+.alice-sidebar-row {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  min-height: 34px;
+  border-radius: 6px;
+  margin-bottom: 3px;
+}
+
+.alice-sidebar-row:hover {
+  background: var(--background-modifier-hover);
+}
+
+.alice-sidebar-row.is-active {
+  background: color-mix(in srgb, var(--interactive-accent) 16%, transparent);
+}
+
+.alice-sidebar button {
+  box-shadow: none;
+  background: transparent;
+  border: 0;
+  height: 34px;
+}
+
+.alice-sidebar-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: start;
+  display: block;
+  padding: 0 8px;
+}
+
+.alice-sidebar-row.is-active .alice-sidebar-title {
+  color: var(--alice-blue, #65baff);
+  font-weight: 600;
+}
+
+.alice-sidebar-action {
+  flex: 0 0 30px;
+  padding: 6px;
+  color: var(--alice-blue, #65baff);
+}
+
+.alice-sidebar-action.is-pinned {
+  color: var(--alice-gold, #ffd16a);
+}
+
+.alice-sidebar-action svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.alice-sidebar button:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: -2px;
+}
+
+.alice-sidebar-empty {
+  padding: 8px;
+  color: var(--text-muted);
+}
+
+/* Keep the right-sidebar toggle reachable when its toolbar moves into the root. */
+body:not(.is-mobile):has(.workspace-leaf-content[data-type="alice-sidebar"]) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container:not(:has(.sidebar-toggle-button.mod-right)) {
+  display: none;
+}
+
+/* Overlay the remaining controls without reserving a framed row above the note. */
+body:not(.is-mobile):has(.workspace-leaf-content[data-type="alice-sidebar"]) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container:has(.sidebar-toggle-button.mod-right) {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  background: transparent;
+  border: 0;
+  z-index: var(--layer-cover, 5);
+  pointer-events: none;
+  -webkit-app-region: no-drag;
+}
+
+body:not(.is-mobile):has(.workspace-leaf-content[data-type="alice-sidebar"]) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .sidebar-toggle-button {
+  pointer-events: auto;
+}
+
+/* Hide document tabs while retaining native sidebar controls and title-bar spacers. */
+body:not(.is-mobile):has(.workspace-leaf-content[data-type="alice-sidebar"]) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container > :is(.workspace-tab-header-container-inner, .workspace-tab-header-new-tab, .workspace-tab-header-tab-list) {
+  display: none;
+}
+
+
+/* Give the native right-sidebar toggle a Cheshire grin without changing its action. */
+body:not(.is-mobile):has(.workspace-leaf-content[data-type="alice-sidebar"]) .sidebar-toggle-button.mod-right svg {
+  background-color: currentColor;
+  mask: url("./assets/cheshire.svg") center / contain no-repeat;
+}
+
+body:not(.is-mobile):has(.workspace-leaf-content[data-type="alice-sidebar"]) .sidebar-toggle-button.mod-right svg > * {
+  display: none;
+}

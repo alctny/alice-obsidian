@@ -1,0 +1,15 @@
+{
+  "name": "alice-obsidian",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm run build:theme && npm run build:plugin",
+    "build:theme": "node alice-midnight/scripts/build.mjs build",
+    "build:plugin": "node alice-sidebar/build.mjs",
+    "dev": "node alice-midnight/scripts/build.mjs dev",
+    "test": "node --test alice-midnight/scripts/build.test.mjs alice-sidebar/tests/*.test.mjs"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "alice-sidebar",
+  "name": "alice-sidebar",
+  "version": "1.0.0",
+  "minAppVersion": "1.10.6",
+  "description": "Opened document tabs in a dockable sidebar with tea-themed actions.",
+  "author": "Alice",
+  "isDesktopOnly": true
+}

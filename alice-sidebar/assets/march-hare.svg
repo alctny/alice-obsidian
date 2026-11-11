@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 292" fill="none">
+  <title>三月兔：格紋外套、懷錶與手杖</title>
+  <defs>
+    <pattern id="hatching" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
+      <path d="M0 0v5" stroke="#493c32" stroke-width=".65" opacity=".5"/>
+    </pattern>
+    <pattern id="checks" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(-23)">
+      <path d="M0 0h13v13" stroke="#62452e" stroke-width="1"/>
+      <path d="M3 0v13M0 3h13" stroke="#f1cd8e" stroke-width=".55" opacity=".6"/>
+    </pattern>
+    <pattern id="blueHatching" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+      <path d="M0 0v4" stroke="#182e40" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <g stroke="#493c32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Long, uneven ears and an alert profile follow the reference illustration. -->
+    <path fill="#ece6d7" d="M103 91C102 73 112 43 127 19c3-5 5-9 6-13 9 15-1 42-9 58l-11 28Z"/>
+    <path fill="#d4aa8b" d="M109 80c4-22 14-43 22-60 1 14-8 39-16 55" stroke-width=".8"/>
+    <path fill="url(#hatching)" stroke="none" d="M104 85c0-21 14-52 24-67-5 21-13 43-15 65Z"/>
+    <path fill="#f4eee2" d="M113 92c0-19 10-36 23-51 13-14 29-27 39-35 3 19-10 40-25 55-11 11-22 21-24 35Z"/>
+    <path fill="#c89e80" d="M123 80c5-19 26-42 46-62-2 17-15 31-26 43Z" stroke-width=".8"/>
+    <path fill="url(#hatching)" stroke="none" d="M118 88c1-14 16-37 27-46l22-20c-7 17-18 29-29 40-6 6-12 16-13 27Z"/>
+    <path fill="#f4eee2" d="M113 84c-10-2-19 0-28 5-10 5-15 15-21 25l-9 16c-3 5 3 9 10 11l12 2c4 8 12 14 22 12l28-28-1-24c0-11-5-16-13-19Z"/>
+    <path fill="url(#hatching)" stroke="none" d="M116 88c7 10 6 21 3 30l-18 29-11 5c6-12 12-23 13-35 0-13 2-21 13-29ZM65 137l18-3-7 10c8 3 10 8 15 10l-9 1-11-13Z"/>
+    <path d="m56 130 5 2-3 4" fill="#73604a"/>
+    <path d="m78 105 5-4 9 1m-17 9 5-4m-3 10 7 2m-2-23 8-3m4 2 6 2" stroke-width=".85"/>
+    <path fill="#c6ad8b" d="M80 107c3-6 10-6 15-1-2 7-9 9-14 5Z"/>
+    <path fill="#4b3529" d="M85 105c4-1 6 1 6 4s-4 4-6 2Z" stroke="none"/>
+    <path d="M78 105c3-4 10-5 15-1m-13 9 11 1m-9-12-2-3m5 2v-3m5 4 2-3M72 130l16-7m-14 10 17-1m-16 3 13 4" stroke-width=".75"/>
+
+    <!-- Far sleeve and the upper cane sit behind the checked coat. -->
+    <path fill="#ad7845" d="M130 135c15 4 31 15 40 31 7 13 3 24-12 29l-19-21Z"/>
+    <path fill="url(#checks)" stroke="none" d="M130 135c15 4 31 15 40 31 7 13 3 24-12 29l-19-21Z"/>
+    <path fill="#253e4b" d="m69 230 110-99c4-4 6-8 4-10-2-2-5 1-6 4L67 229Z" stroke-width="1.1"/>
+
+    <!-- White hindquarters, bent hocks, and long rabbit feet. -->
+    <path fill="#e5dece" d="M170 215c13-4 23 5 19 14-2 6-9 9-16 7Z"/>
+    <path d="m179 219 5 3m-4 1 6 3m-8 1 6 4" stroke-width=".8"/>
+    <path fill="#f4eee2" d="M113 207c-6 16-4 35 8 45l-13 11-16 5c-5 1-8 5-9 8h37l18-16c8-15 13-28 9-45Z"/>
+    <path fill="url(#hatching)" stroke="none" d="M127 218c-6 15-4 26 5 34l-17 18-20 6h25l18-16 8-31Z"/>
+    <path fill="#f4eee2" d="M145 210c-8 13-5 29 9 42l3 8-15 12c-4 3-8 5-10 8h35c7-5 10-12 8-20l-3-13c13-16 10-30 1-38Z"/>
+    <path fill="url(#hatching)" stroke="none" d="M162 216c10 9 10 20 3 31l6 17c0 6-4 12-8 16h4c7-5 10-12 8-20l-3-13c13-16 10-30 1-38Z"/>
+    <path d="m111 223-2 7m6-3-1 8m21-12-3 7m15 5 3 6m-44 28-4 5m12-6-4 5m33 1-5 4m13-6-4 5m10-6-3 5" stroke-width=".8"/>
+
+    <!-- Ochre frock coat over a pale yellow waistcoat. -->
+    <path fill="#d6a35f" d="M99 126c17-7 29-4 43 10 8 10 11 25 13 44l23 45c-10 9-27 10-38 0l-18-16-14-27-10-41Z"/>
+    <path fill="url(#checks)" stroke="none" d="M99 126c17-7 29-4 43 10 8 10 11 25 13 44l23 45c-10 9-27 10-38 0l-18-16-14-27-10-41Z"/>
+    <path fill="url(#hatching)" stroke="none" d="M134 139c11 14 11 36 15 48l22 40-13 5-16-9-5-24-8-23Z"/>
+    <path fill="#edcf85" d="M97 139c3 12 3 28 2 43l-3 29c11 8 25 10 36 4-9-22-13-50-14-76Z"/>
+    <path d="m104 151 5 50 17 11m-29-4 16 5 5-5m-15-12 9 1" stroke="#8b683c" stroke-width=".85"/>
+    <g fill="#bd9151" stroke-width=".8">
+      <circle cx="105" cy="166" r="1.8"/><circle cx="107" cy="178" r="1.8"/><circle cx="109" cy="190" r="1.8"/>
+    </g>
+    <path fill="#d6a35f" d="m113 129 12 8-6 16 10 5-10 24-10-29Z"/>
+    <path fill="url(#checks)" stroke="none" d="m113 129 12 8-6 16 10 5-10 24-10-29Z"/>
+    <path d="m144 200 17-5 5 13-17 6Zm2 2 15-4m-21 20 9 8" stroke-width="1"/>
+    <path fill="#a96048" d="m149 196 8-10 5 9Z" stroke-width=".8"/>
+
+    <!-- Raised wrist, gold pocket watch, and a loose chain. -->
+    <path fill="#d6a35f" d="M102 145c-1 9-6 22-13 23-9 0-20-9-28-17l-8 12c8 15 23 29 38 27 14-2 22-14 27-26"/>
+    <path fill="url(#checks)" stroke="none" d="M102 145c-1 9-6 22-13 23-9 0-20-9-28-17l-8 12c8 15 23 29 38 27 14-2 22-14 27-26Z"/>
+    <path d="M64 168c10 12 20 16 29 14m-31-10 4-10m3 15 5-10m3 15 5-10m5 13 3-10" stroke-width=".7"/>
+    <path fill="#f4eee2" d="m54 149 10 9-5 8-12-10Z"/>
+    <path fill="#f4eee2" d="M49 154c-7-2-11-7-10-13l1-9 5-5 7 1 4 5 6 3-2 6-6-3-5-3-3 4 7 5Z"/>
+    <path d="m41 136 6-5 6 3m-13 8 5-6m-1 9 5-3" stroke-width=".8"/>
+    <path d="M58 148c-1 26 9 51 34 48l14-9" stroke="#98723e" stroke-width="3"/>
+    <path d="M58 148c-1 26 9 51 34 48l14-9" stroke="#efd28a" stroke-width="1.7" stroke-dasharray="1 3.6"/>
+    <ellipse cx="61" cy="140" rx="10" ry="12" transform="rotate(-35 61 140)" fill="#c69a4b"/>
+    <ellipse cx="61" cy="138" rx="8.4" ry="10" transform="rotate(-35 61 138)" fill="#faf0d4" stroke-width=".85"/>
+    <path d="m57 132 4 7 5 1m-9-11 1 2m8 2-2 1m2 10-1-2m-10-3 2-1m1-13 2-2 3 2" stroke-width=".8"/>
+
+    <!-- High white collar and a narrow blue cravat. -->
+    <path fill="#f8f0dd" d="m79 143 43-24 4 10-29 31Z"/>
+    <path d="m87 144 34-20-24 29" stroke="#aa9b80" stroke-width=".8"/>
+    <path fill="#41627a" d="m97 155 28-27 3 6-23 30 5 15-13-4-4-14Z"/>
+    <path fill="url(#blueHatching)" stroke="none" d="m97 155 28-27 3 6-23 30 5 15-13-4-4-14Z"/>
+    <path d="m97 158 7 5-7 10m4-18 5 4" stroke="#a7b3ad" stroke-width=".8"/>
+
+    <!-- Near paw rests on the diagonal cane. -->
+    <path fill="#f4eee2" d="m144 171-11 3-8 10 5 8 12-7 7-8Z"/>
+    <path d="m128 183 8-5m-6 9 8-5m-5 8 8-5" stroke-width=".8"/>
+    <path fill="#253e4b" d="m69 230 76-69 2 2-78 69Z" stroke-width=".9"/>
+    <path d="m96 207 46-42" stroke="#8b9b98" stroke-width=".65"/>
+  </g>
+</svg>

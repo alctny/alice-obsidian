@@ -1,5 +1,5 @@
 /*
- * Alice Midnight — 1.0.0
+ * alice-midnight — 1.0.0
  * Inspired by Alice’s blue dress, golden hair, and the shadowed forest.
  * All overrides are scoped to dark mode. Release builds embed the SVG assets.
  */
@@ -21,6 +21,8 @@
   --alice-text: #f4eee5;
   --alice-muted: #c1bab1;
   --alice-faint: #a49d96;
+  --alice-divider-opacity: 40%;
+  --alice-divider-opacity-hover: 75%;
 
   /* Native accent controls remain available in Settings → Appearance. */
   --accent-h: 207;
@@ -59,7 +61,7 @@
   --color-pink-rgb: 241, 172, 140;
 
   /* Surfaces and text */
-  --background-primary: var(--alice-ink);
+  --background-primary: var(--background-secondary);
   --background-primary-alt: var(--alice-surface);
   --background-secondary: var(--alice-deep);
   --background-secondary-alt: var(--alice-surface);
@@ -109,7 +111,7 @@
   --titlebar-text-color: var(--text-muted);
   --titlebar-text-color-focused: var(--text-normal);
   --tab-container-background: var(--alice-deep);
-  --tab-background-active: var(--alice-ink);
+  --tab-background-active: var(--background-primary);
   --tab-text-color: var(--text-muted);
   --tab-text-color-active: var(--alice-blue);
   --tab-text-color-focused: var(--text-muted);
@@ -334,7 +336,7 @@
 .theme-dark .markdown-rendered :not(pre) > code,
 .theme-dark .cm-s-obsidian span.cm-inline-code:not(.cm-hmd-indented-code) {
   /* Let CodeMirror's selection layer show through the inline code background. */
-  --code-background: color-mix(in srgb, var(--alice-gold) 18%, transparent);
+  --code-background: color-mix(in srgb, var(--alice-blue) 28%, transparent);
   --text-selection: color-mix(in srgb, var(--alice-gold) 40%, transparent);
 }
 
@@ -446,12 +448,17 @@
   }
 }
 
-/* Keep Alice anchored to the note pane, outside its scrolling content. */
-.theme-dark .workspace-leaf-content[data-type="markdown"]::after {
+/* Center Alice in the note body, outside its scrolling content. */
+.theme-dark .workspace-leaf-content[data-type="markdown"] > .view-content {
+  position: relative;
+}
+
+.theme-dark .workspace-leaf-content[data-type="markdown"] > .view-content::after {
   content: "";
   position: absolute;
-  right: 16px;
-  bottom: 24px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 20vw;
   aspect-ratio: 160 / 150;
   background: center / contain no-repeat url("./assets/alice-mushroom.svg");
@@ -667,227 +674,6 @@
   --titlebar-height: 32px;
 }
 
-/* Desktop document tabs: a right-edge drawer over the note, without reflow. */
-@media (hover: hover) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) {
-    position: relative;
-    overflow: visible;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
-    position: absolute;
-    inset-block: 0;
-    inset-inline-end: 0;
-    width: 220px;
-    height: 100%;
-    max-height: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 12px 8px;
-    background: var(--background-secondary);
-    border-inline-start: 1px solid var(--background-modifier-border);
-    border-radius: 10px 0 0 10px;
-    box-shadow: -8px 0 24px rgb(0 0 0 / 20%);
-    z-index: 20;
-    /* Leave an invisible eight-pixel strip inside the window as the target. */
-    clip-path: inset(0 0 0 calc(100% - 8px));
-    opacity: 0;
-    transition: clip-path 180ms ease 200ms, opacity 180ms ease 200ms;
-    -webkit-app-region: no-drag;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container:is(:hover, :focus-within) {
-    clip-path: inset(0);
-    opacity: 1;
-    transition-delay: 0ms;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    flex: 1 1 auto;
-    min-height: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    gap: 4px;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header {
-    flex: 0 0 auto;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-    height: 34px;
-    margin: 0;
-    padding: 0;
-    border-radius: 6px;
-    box-shadow: none;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header::before,
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header::after {
-    display: none;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-inner {
-    width: 100%;
-    height: 100%;
-    padding: 0 8px;
-    box-sizing: border-box;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-inner-title {
-    text-align: start;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header.is-active {
-    background: var(--background-modifier-hover);
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-spacer {
-    display: none;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container :is(.workspace-tab-header-new-tab, .workspace-tab-header-tab-list) {
-    flex: 0 0 auto;
-    align-self: center;
-    margin: 4px 0 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
-    transition: none;
-  }
-}
-
-/* Anchor the drawer to the window edge, including when the right dock is open. */
-@media (hover: hover) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
-    position: fixed;
-    inset-block-start: var(--header-height);
-    inset-block-end: 0;
-    inset-inline-end: 0;
-    height: auto;
-    max-height: none;
-    z-index: 100;
-    /* Keep the whole open drawer hit-testable while its tab children change. */
-    pointer-events: auto;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container:has(:hover) {
-    clip-path: inset(0);
-    opacity: 1;
-    transition-delay: 0ms;
-  }
-
-  /* Obsidian applies draggable regions to the native tab strip. */
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container,
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container * {
-    -webkit-app-region: no-drag;
-  }
-}
-
-/* Floating tab ribbons: transparent drawer, staggered widths, active emphasis. */
-@media (hover: hover) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    padding-inline: 8px 0;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container :is(.workspace-tab-header-new-tab, .workspace-tab-header-tab-list) {
-    display: none;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
-    background: transparent;
-    align-items: flex-end;
-    gap: 7px;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header {
-    width: 82%;
-    align-self: flex-end;
-    border-radius: 7px 0 0 7px;
-    background: var(--background-secondary);
-    border: 1px solid var(--background-modifier-border);
-    border-inline-end: 0;
-    transition: width 160ms ease, background-color 160ms ease;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header:nth-child(3n + 2) {
-    width: 90%;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header:nth-child(3n) {
-    width: 76%;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header.is-active {
-    width: 100%;
-    background: color-mix(in srgb, var(--alice-blue) 16%, var(--background-secondary));
-    border-color: color-mix(in srgb, var(--alice-blue) 55%, var(--background-modifier-border));
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header.is-active .workspace-tab-header-inner-title {
-    color: var(--alice-blue);
-    font-weight: 600;
-  }
-}
-
-/* Lift an individual tab ribbon on hover. */
-@media (hover: hover) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header {
-    transition: width 160ms ease, background-color 160ms ease,
-      transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header:hover {
-    transform: translateX(-5px);
-    background: color-mix(in srgb, var(--alice-blue) 22%, var(--background-secondary));
-    border-color: var(--alice-blue);
-    box-shadow: -3px 4px 12px rgb(0 0 0 / 30%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header {
-    transition: none;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header:hover {
-    transform: none;
-  }
-}
-
-/* Reserve space inside the scroll viewport for the longest ribbon's lift. */
-@media (hover: hover) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
-    box-sizing: border-box;
-    padding-inline-start: 10px;
-  }
-}
-
-/* Hide the vertical tab drawer's scrollbar while preserving scrolling. */
-@media (hover: hover) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
-    scrollbar-width: none;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner::-webkit-scrollbar {
-    display: none;
-  }
-}
-
 /* Hide note scrollbars in Reading view and the editor without disabling scroll. */
 .theme-dark .workspace-leaf-content[data-type="markdown"] :is(.markdown-preview-view, .cm-scroller) {
   scrollbar-width: none;
@@ -897,99 +683,9 @@
   display: none;
 }
 
-/* Remove the native horizontal strip's reserved end space in the drawer. */
-@media (hover: hover) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
-    --tab-container-end-spacing: 0px;
-    padding-inline-end: 0;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
-    padding-inline-end: 0;
-    margin-inline-end: 0;
-    max-width: none;
-    align-self: stretch;
-  }
-}
-
-/* Override macOS top-corner chrome padding retained by the native tab strip. */
-@media (hover: hover) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
-    padding-right: 0 !important;
-    padding-left: 8px !important;
-  }
-}
-
-/* Keep complete rounded ribbons inset from the window edge; show a tab count. */
-@media (hover: hover) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
-    counter-reset: alice-open-tabs;
-    padding-right: 8px !important;
-    padding-top: 38px;
-    clip-path: none;
-    opacity: 1;
-    pointer-events: none;
-    transition: none;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container::after {
-    content: "* " counter(alice-open-tabs);
-    position: absolute;
-    top: 5px;
-    right: 8px;
-    min-width: 48px;
-    height: 26px;
-    box-sizing: border-box;
-    padding: 3px 8px 3px 28px;
-    color: var(--alice-blue);
-    background: url("./assets/oyster-blue.svg") 6px center / 18px 18px no-repeat var(--background-secondary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 7px;
-    font-size: 12px;
-    line-height: 18px;
-    pointer-events: auto;
-    -webkit-app-region: no-drag;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header {
-    counter-increment: alice-open-tabs;
-    border-radius: 7px;
-    border-inline-end: 1px solid var(--background-modifier-border);
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 180ms ease 200ms, visibility 0s linear 380ms;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container:is(:hover, :focus-within) {
-    pointer-events: auto;
-  }
-
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container:is(:hover, :focus-within) .workspace-tab-header-container-inner {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transition-delay: 0ms;
-  }
-}
-
-/* Hide the right sidebar toggle in the desktop title bar. */
-.theme-dark:not(.is-mobile) .sidebar-toggle-button.mod-right {
-  display: none;
-}
-
-/* Remove the note pane's native header now that tabs live in the drawer. */
+/* Remove the note pane's native header to keep the note title compact. */
 .theme-dark:not(.is-mobile) .mod-root .workspace-leaf-content[data-type="markdown"] > .view-header {
   display: none;
-}
-
-@media (hover: hover) {
-  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
-    inset-block-start: 0;
-  }
 }
 
 /* Bring the inline filename up by removing the note's default top inset. */
@@ -999,4 +695,60 @@
 
 .theme-dark:not(.is-mobile) .mod-root .workspace-leaf-content[data-type="markdown"] .markdown-preview-view {
   padding-top: 8px;
+}
+
+/* Blue-to-gold separators. Paint existing borders without changing layout. */
+.theme-dark :is(
+  .workspace-leaf-resize-handle,
+  .workspace-tab-header-container,
+  .workspace-sidedock-vault-profile,
+  .workspace-ribbon,
+  .modal.mod-settings .vertical-tab-header,
+  .community-modal-search-results-wrapper,
+  .community-modal-details,
+  .pdf-sidebar-container,
+  .webviewer-content,
+  .list-container.mod-manage-workspaces,
+  .menu-separator,
+  :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-container,
+  hr
+),
+.theme-dark .setting-group .setting-item:not(.setting-item-heading)::before,
+.theme-dark .workspace .mod-root .workspace-tab-header-inner::after {
+  --alice-divider-direction: to right;
+  /* Resolve on each separator so hover and snippet overrides take effect. */
+  --alice-divider-gradient: linear-gradient(
+    var(--alice-divider-direction),
+    color-mix(in srgb, var(--alice-blue) var(--alice-divider-opacity), transparent),
+    color-mix(in srgb, var(--alice-gold) var(--alice-divider-opacity), transparent)
+  );
+  border-image-source: var(--alice-divider-gradient);
+  border-image-slice: 1;
+}
+
+/* Match native split orientation, including pinned tablet sidebars. */
+.theme-dark :is(
+  .workspace-split.mod-vertical > * > .workspace-leaf-resize-handle,
+  .workspace-split.mod-primary-split > .workspace-leaf-resize-handle,
+  .workspace-split.mod-secondary-split > .workspace-leaf-resize-handle,
+  .workspace-drawer.is-pinned > .workspace-leaf-resize-handle,
+  .workspace-ribbon,
+  .modal.mod-settings .vertical-tab-header,
+  .community-modal-details,
+  .pdf-sidebar-container
+),
+.theme-dark .workspace .mod-root .workspace-tab-header-inner::after {
+  --alice-divider-direction: to bottom;
+}
+
+/* Tab separators are native pseudo-elements with a background, not a border. */
+.theme-dark .workspace .mod-root .workspace-tab-header-inner::after {
+  background-color: transparent;
+  background-image: var(--alice-divider-gradient);
+}
+
+/* Keep the native hit area and cursor; brighten only the visible border. */
+.theme-dark .workspace-leaf-resize-handle:is(:hover, .is-active, .mobile-tap) {
+  --alice-divider-opacity: var(--alice-divider-opacity-hover);
+  background-color: transparent;
 }
