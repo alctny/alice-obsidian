@@ -43,8 +43,9 @@
   background: var(--background-modifier-hover);
 }
 
-.alice-sidebar-row.is-active {
-  background: color-mix(in srgb, var(--interactive-accent) 16%, transparent);
+.alice-sidebar .alice-sidebar-row.is-active {
+  background: var(--alice-active-background, #205489);
+  color: var(--alice-gold, #ffd16a);
 }
 
 .alice-sidebar button {
@@ -65,18 +66,22 @@
   padding: 0 8px;
 }
 
-.alice-sidebar-row.is-active .alice-sidebar-title {
-  color: var(--alice-blue, #65baff);
+.alice-sidebar .alice-sidebar-row.is-active > .alice-sidebar-title {
+  color: var(--alice-gold, #ffd16a);
   font-weight: 600;
 }
 
 .alice-sidebar-action {
   flex: 0 0 30px;
   padding: 6px;
+}
+
+/* Action color depends only on pin state, including the current document. */
+.alice-sidebar .alice-sidebar-action:not(.is-pinned) {
   color: var(--alice-blue, #65baff);
 }
 
-.alice-sidebar-action.is-pinned {
+.alice-sidebar .alice-sidebar-action.is-pinned {
   color: var(--alice-gold, #ffd16a);
 }
 

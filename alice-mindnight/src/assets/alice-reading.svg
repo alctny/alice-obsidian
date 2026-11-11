@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="600" viewBox="0 0 640 600" fill="none">
+  <defs>
+    <linearGradient id="cap" x1="255" y1="47" x2="293" y2="177" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e8bef2"/><stop offset=".58" stop-color="#cd96e0"/><stop offset="1" stop-color="#b778ce"/>
+    </linearGradient>
+    <linearGradient id="gills" x1="278" y1="136" x2="278" y2="205" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#b874c7"/><stop offset="1" stop-color="#e2b5eb"/>
+    </linearGradient>
+    <linearGradient id="stem" x1="192" y1="260" x2="295" y2="277" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#b97acd"/><stop offset=".48" stop-color="#dab0e6"/><stop offset="1" stop-color="#a56cc2"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="331" y1="237" x2="452" y2="387" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff1bd"/><stop offset=".5" stop-color="#ffd16a"/><stop offset="1" stop-color="#dba04b"/>
+    </linearGradient>
+    <linearGradient id="skin" x1="360" y1="265" x2="421" y2="335" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff0dc"/><stop offset="1" stop-color="#f5c5ac"/>
+    </linearGradient>
+    <linearGradient id="dress" x1="313" y1="341" x2="435" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7bd3ff"/><stop offset=".5" stop-color="#38aaf2"/><stop offset="1" stop-color="#247bc7"/>
+    </linearGradient>
+    <linearGradient id="apron" x1="371" y1="354" x2="413" y2="497" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fffdf5"/><stop offset="1" stop-color="#d7ecf1"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#b6d66e"/><stop offset="1" stop-color="#558c61"/>
+    </linearGradient>
+    <linearGradient id="pages" x1="368" y1="427" x2="426" y2="486" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff9dc"/><stop offset="1" stop-color="#e6d8b5"/>
+    </linearGradient>
+    <clipPath id="back-stocking">
+      <path d="M435 484c32-9 66-3 70 12 5 20-33 36-71 43l-70 12-12-25 62-25z"/>
+    </clipPath>
+    <clipPath id="front-stocking">
+      <path d="M310 483c-26 4-35 20-17 34 20 15 66 16 98 22l86 16 8-24-81-27-61-20z"/>
+    </clipPath>
+    <g id="ivy-leaf" stroke="#64884c" stroke-width="1.4" stroke-linejoin="round">
+      <path d="M0 21C-9 16-18 7-17-3l11 3 8-13L8 0l12-2C18 11 10 18 0 21Z" fill="url(#leaf)"/>
+      <path d="M1 17 2-7M1 9-9 3M2 9l11-7"/>
+    </g>
+  </defs>
+  <!-- An open woodland vignette on a transparent canvas. -->
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M91 493c17-38 44-57 70-48 30-38 73-42 101-24 43-11 62 4 78 27 43-17 95-13 124 12 36-13 70 1 84 33-42 36-122 57-232 55-107-1-185-17-225-55Z" fill="#78bfa7" opacity=".5"/>
+    <path d="M126 506c-15-45-15-87-5-127 12 42 16 81 17 119M166 479c-18-41-25-86-19-128 21 45 29 84 31 124M508 510c5-47 19-83 43-115-3 47-17 82-32 115" fill="#84b968"/>
+    <path d="M111 513c31-19 73-29 109-24 48-19 95-16 124 0 54-14 119-6 168 21-42 27-105 40-196 40-94 0-161-13-205-37Z" fill="#548d7e" opacity=".38"/>
+    <!-- Broad mushroom canopy, ribbed underside, and softly shaded stalk. -->
+    <path d="M174 150c28 37 41 91 37 144-4 62-20 107-34 144 31 22 88 24 126 0-27-36-34-83-31-140 3-56 14-111 43-144Z" fill="url(#stem)" stroke="#9764ab" stroke-width="2.5"/>
+    <path d="M227 185c9 64 5 136-16 215M245 190c-9 64-2 142 7 208M266 194c-9 35-11 69-9 100M224 421c-4 8-8 13-10 17M280 381c4 18 11 36 17 48" stroke="#f2d3f4" stroke-width="5" opacity=".45"/>
+    <path d="M208 208c10 34 6 72-1 102M276 225c-12 42-13 82-8 117M203 361l-8 33M245 311l2 40" stroke="#a970be" stroke-width="2.5" opacity=".65"/>
+    <path d="M69 140c61-19 127-25 197-20 91 3 169 4 239 13-18 20-62 25-114 25-40 0-63 12-86 31-28 24-67 20-92-4-24-25-53-27-91-26-25 0-45-6-53-19Z" fill="url(#gills)" stroke="#9d69b3" stroke-width="2.5"/>
+    <g stroke="#a66ab8" stroke-width="2" opacity=".8">
+      <path d="m123 146 99 32M153 139l77 46M184 133l53 57M215 132l28 63M244 131l5 65M275 131l-18 65M305 132l-41 61M335 134l-64 53M366 136l-87 43M400 139l-111 31M437 141l-140 21"/>
+    </g>
+    <path d="M58 134C90 104 155 66 218 52c69-16 124-14 179 13 43 20 74 41 110 64 14 9 7 19-8 21-39 7-74-6-111-10-41-4-70 7-104 11-52 7-91-9-132-4-39 5-77 7-94-4-5-3-5-6 0-9Z" fill="url(#cap)" stroke="#a578b8" stroke-width="2.8"/>
+    <path d="M74 130c42-29 90-54 148-66 58-12 103-13 145 1" stroke="#f7dcfa" stroke-width="6" opacity=".6"/>
+    <path d="M76 142c39 10 74-9 112-3 43 7 64 14 108 5 42-9 64-14 102-9 35 5 69 17 99 9" stroke="#edc6f2" stroke-width="3"/>
+    <path d="M115 124c19-10 39-13 65-8M191 103c12-6 25-9 38-9M271 127c26-6 54-10 75-7M357 91c20 3 40 10 58 21M196 63l26-9" stroke="#b37ac4" stroke-width="2" opacity=".7"/>
+    <g fill="#b477c6" opacity=".5">
+      <ellipse cx="114" cy="135" rx="9" ry="3" transform="rotate(-8 114 135)"/>
+      <ellipse cx="233" cy="131" rx="12" ry="3.5" transform="rotate(8 233 131)"/>
+      <ellipse cx="263" cy="138" rx="5" ry="2"/>
+      <ellipse cx="407" cy="126" rx="12" ry="3" transform="rotate(16 407 126)"/>
+      <ellipse cx="454" cy="136" rx="6" ry="2.5"/>
+    </g>
+    <!-- Ivy winds around the stalk and drapes across the canopy. -->
+    <path d="M190 420c-37-48 23-65 3-100-17-28-44-30-42-59 1-27 40-25 39-51" stroke="#8d9d5f" stroke-width="5"/>
+    <path d="M189 419c-35-48 23-65 3-100-17-28-44-30-42-59" stroke="#d1c88b" stroke-width="1.5"/>
+    <use href="#ivy-leaf" transform="translate(153 249) rotate(32) scale(.94)"/>
+    <use href="#ivy-leaf" transform="translate(182 222) rotate(-40) scale(.86)"/>
+    <use href="#ivy-leaf" transform="translate(181 301) rotate(65) scale(.86)"/>
+    <use href="#ivy-leaf" transform="translate(197 341) rotate(-25) scale(.8)"/>
+    <use href="#ivy-leaf" transform="translate(179 381) rotate(24) scale(.9)"/>
+    <path d="M365 65c44 9 57 41 79 66 13 14 23 28 22 49" stroke="#93a15a" stroke-width="4"/>
+    <use href="#ivy-leaf" transform="translate(401 79) rotate(-24) scale(1.12)"/>
+    <use href="#ivy-leaf" transform="translate(426 112) rotate(59) scale(1.03)"/>
+    <use href="#ivy-leaf" transform="translate(452 143) rotate(98) scale(.9)"/>
+    <!-- A few small plants sit behind the figure. -->
+    <g stroke="#8f66aa" stroke-width="1.7">
+      <path d="m114 440 6-45 8-1 2 45" fill="#e4c6ec"/>
+      <path d="M102 399c6-11 14-19 21-20 8 4 16 11 21 19-13 5-28 5-42 1Z" fill="#c493e2"/>
+      <path d="m143 455 9-24 5 1-3 25" fill="#e8d2ef"/>
+      <path d="M137 435c7-10 14-15 20-15l17 16c-15 4-24 4-37-1Z" fill="#b882d3"/>
+      <path d="m523 486 8-39 7 1-2 39" fill="#e4c6ec"/>
+      <path d="M512 451c8-13 17-19 24-20 8 3 15 12 20 22-16 4-30 4-44-2Z" fill="#cba1e2"/>
+    </g>
+    <path d="M476 470c-16-26-17-52-7-77 23 27 25 51 7 77Z" fill="#78a978" stroke="#5c8e68" stroke-width="2"/>
+    <path d="M485 474c10-34 30-53 57-58-4 31-25 51-57 58Z" fill="#92ba7c" stroke="#648f67" stroke-width="2"/>
+    <path d="m474 463-4-53m20 56 37-36" stroke="#b8d69b" stroke-width="2"/>
+    <!-- Golden hair falls behind the shoulders and skirt. -->
+    <path d="M338 257c-5-36 18-64 53-63 36 0 60 26 59 63-1 32-6 61 3 91 6 22 12 36 7 52-11-4-20-5-28-3-13 12-33 10-45-1-18 7-42 2-53-13 15-23 9-40 5-63-5-23-6-44-1-63Z" fill="url(#hair)" stroke="#ba965b" stroke-width="2.5"/>
+    <path d="M350 257c-9 44 14 81-1 119M432 267c-10 45 12 88 5 116M420 283c-7 42 9 68 3 95" stroke="#fff1b9" stroke-width="4" opacity=".7"/>
+    <path d="M344 302c3 29 12 49 3 72M440 312c0 30 12 53 8 73" stroke="#d7ad60" stroke-width="2"/>
+    <!-- Full blue skirt, petticoat, and crossed striped stockings. -->
+    <path d="M340 389c-27 3-51 23-68 49-18 27-35 40-53 53 14 23 51 28 85 21 23 14 63 18 91 8 40 13 83 9 119-10-10-29-27-55-50-74-25-21-49-44-76-49Z" fill="url(#dress)" stroke="#2879b1" stroke-width="2.7"/>
+    <path d="M233 494c19 7 32 12 52 5l12 8 22-2 17 9 23-3 18 7 24-7 17 6 23-8 19 3 20-9 23 1 8 9c-40 20-79 24-119 12-32 10-64 3-86-7-31 6-57 0-73-14Z" fill="#f0f5ed" stroke="#98becd" stroke-width="1.8"/>
+    <path d="M339 409c-41 28-40 66-79 86M350 422c-15 33-15 62-30 79M405 419c18 30 15 61 31 81M429 425c37 22 36 50 65 72" stroke="#1679c0" stroke-width="5" opacity=".6"/>
+    <path d="M315 435c-10 13-18 27-25 41M455 457l21 29M344 452l-7 31" stroke="#9bdeff" stroke-width="3" opacity=".7"/>
+    <path d="M435 484c32-9 66-3 70 12 5 20-33 36-71 43l-70 12-12-25 62-25Z" fill="#f3f0df" stroke="#555257" stroke-width="2.4"/>
+    <g clip-path="url(#back-stocking)" stroke="#33343e" stroke-width="14">
+      <path d="m363 506 12 48m7-56 13 49m7-58 14 52m7-60 15 53m7-57 17 52m5-53 18 43m4-45 18 36"/>
+    </g>
+    <path d="M364 526c-9-6-21-4-29 3-7 6-8 17-4 23 10 7 28 6 40-3Z" fill="#30343e" stroke="#242935" stroke-width="2.5"/>
+    <path d="M335 543c9 2 18 1 25-4" stroke="#65747f" stroke-width="2.5"/>
+    <path d="M310 483c-26 4-35 20-17 34 20 15 66 16 98 22l86 16 8-24-81-27-61-20Z" fill="#f8f4e4" stroke="#555257" stroke-width="2.4"/>
+    <g clip-path="url(#front-stocking)" stroke="#34353e" stroke-width="14">
+      <path d="m302 474-18 52m39-49-19 57m39-54-20 57m40-51-20 56m41-50-19 53m40-47-19 53m40-46-18 51m39-44-16 49m36-42-14 46"/>
+    </g>
+    <path d="M479 529c12-5 19 0 27 8 10 4 20 9 23 16 3 8-8 12-23 11l-35-10Z" fill="#30343e" stroke="#242935" stroke-width="2.5"/>
+    <path d="M496 538c6 3 9 8 11 12M483 551c11 5 27 7 37 5" stroke="#687582" stroke-width="2.5"/>
+    <!-- Bodice and pale apron with ruffled straps. -->
+    <path d="M356 336c-17 0-31 14-31 32l13 28 8 21c23 11 48 11 69 0l10-36 2-27c-8-13-20-19-35-20Z" fill="url(#dress)" stroke="#338cbf" stroke-width="2.4"/>
+    <path d="M356 346c12 11 32 13 46-1l5 60c13 29 27 50 49 69-20 18-54 30-77 27-24 3-51-6-66-19 21-27 31-47 38-72Z" fill="url(#apron)" stroke="#91b8c9" stroke-width="2"/>
+    <path d="M355 342c-8 2-12 7-9 13-6 4-6 11-1 15-5 5-5 12 0 16-4 5-4 11 2 15l8-2 3-46Z" fill="#fffdf5" stroke="#a5c7d3" stroke-width="1.6"/>
+    <path d="M402 341c8 1 13 6 10 12 7 3 8 10 3 15 6 5 6 12 1 16 5 5 5 12-1 16l-8-2-5-45Z" fill="#fffdf5" stroke="#a5c7d3" stroke-width="1.6"/>
+    <path d="M347 405c17 6 40 7 62-1l1 12c-22 8-44 7-65 0Z" fill="#fffdf6" stroke="#a5c7d3" stroke-width="1.7"/>
+    <path d="M353 427c-5 15-11 28-20 41M403 432c5 18 13 32 24 44M365 466l-4 19" stroke="#bed8e0" stroke-width="2.5"/>
+    <!-- Face and quiet downward gaze toward the open book. -->
+    <path d="m369 316-1 21c5 15 21 18 32 3l-6-23Z" fill="url(#skin)" stroke="#cb9d87" stroke-width="2"/>
+    <path d="M365 337c5 9 11 13 18 14-8 8-17 7-24-1ZM383 351c7-2 13-6 17-13l7 10c-5 11-15 12-24 3Z" fill="#fffdf6" stroke="#9dbfc9" stroke-width="1.7"/>
+    <path d="M350 259c-4 12-3 31 4 45 7 18 20 31 37 31 17-1 33-17 39-35 7-19 3-38-8-51l-37-18Z" fill="url(#skin)" stroke="#c49b85" stroke-width="2.2"/>
+    <path d="M351 278c-10-7-13 2-7 12 3 4 6 6 10 5" fill="#f7d3b9" stroke="#c49b85" stroke-width="1.7"/>
+    <path d="M348 278c-4-35 17-65 49-59 24 4 36 22 34 47-17-4-30-16-37-28-9 18-24 28-46 33Z" fill="url(#hair)" stroke="#c29b60" stroke-width="2.3"/>
+    <path d="M354 258c10-17 23-27 39-29M362 260c13-11 22-20 28-30M404 235c6 10 13 18 21 22" stroke="#fff5d1" stroke-width="3" opacity=".9"/>
+    <path d="M348 273c-2 21 5 38 2 56-2 15-8 23-9 33 13-7 20-23 18-40-2-16-6-29-4-45" fill="url(#hair)" stroke="#c29b60" stroke-width="1.7"/>
+    <path d="M428 265c8 21-1 44-6 58-5 17-2 35 8 47-2-24 8-39 12-58 3-20 0-37-8-51" fill="url(#hair)" stroke="#c29b60" stroke-width="1.7"/>
+    <path d="M362 280c6-4 13-4 18-1M398 279c6-3 12-2 17 1" stroke="#ac875e" stroke-width="2"/>
+    <path d="M361 289c6 5 14 6 20 2-5 10-14 10-20-2ZM396 290c6 4 13 5 19 1-4 9-13 9-19-1Z" fill="#fff9ed" stroke="#755e58" stroke-width="1.5"/>
+    <path d="M373 291v5M407 292v4" stroke="#60818c" stroke-width="3"/>
+    <path d="M360 288c7 5 14 6 21 3M395 289c7 5 14 5 20 2m-52-1-3-3m38 4-3-3" stroke="#4f4a50" stroke-width="2.2"/>
+    <path d="m389 290-3 15 5 2" stroke="#cf9c87" stroke-width="1.5"/>
+    <ellipse cx="364" cy="307" rx="9" ry="4" fill="#f0a99e" opacity=".42"/>
+    <ellipse cx="412" cy="307" rx="8" ry="4" fill="#f0a99e" opacity=".35"/>
+    <path d="M380 317c5-2 9-1 13 1-4 6-9 6-13-1Z" fill="#d58182"/>
+    <path d="m382 317 8 1" stroke="#af7272" stroke-width="1.3"/>
+    <path d="M347 245c8-22 33-38 59-28" stroke="#252d48" stroke-width="8"/>
+    <path d="M368 219c-12 0-26-8-24-18 1-9 18-2 27 9 4-15 17-26 22-17 5 9-7 23-18 25Z" fill="#262c49" stroke="#1f2540" stroke-width="2"/>
+    <path d="m349 205 14 9m15-7 10-11" stroke="#4b5273" stroke-width="2"/>
+    <path d="M368 211c5-3 9-1 10 4l-3 7-8-2Z" fill="#303858"/>
+    <!-- Puff sleeves and forearms frame the book. -->
+    <path d="M337 346c-15 3-24 17-23 31 4 9 15 14 27 10l9-23Z" fill="url(#dress)" stroke="#338cbf" stroke-width="2"/>
+    <path d="M318 359c-4 7-5 14-3 20M328 354c-5 5-6 12-5 18" stroke="#a2e2ff" stroke-width="2.5"/>
+    <path d="M315 378c7 5 15 7 25 4l1 8c-10 4-20 2-28-4Z" fill="#fffdf5" stroke="#a5c7d3" stroke-width="1.6"/>
+    <path d="M316 388c-4 18-6 38 1 49 7 9 20 17 35 20l7-12c-13-6-24-11-26-18-3-9 1-22 1-36" fill="url(#skin)" stroke="#ca9f88" stroke-width="2"/>
+    <path d="M418 346c14-1 24 13 26 27-3 12-14 17-25 12l-6-21Z" fill="url(#dress)" stroke="#338cbf" stroke-width="2"/>
+    <path d="M427 354c7 4 11 11 11 18" stroke="#9edeff" stroke-width="2.5"/>
+    <path d="M420 380c9 3 16 0 23-5l2 8c-6 6-15 9-25 5Z" fill="#fffdf5" stroke="#a5c7d3" stroke-width="1.6"/>
+    <path d="M423 389c2 17 7 35 15 43 9 9 18 11 29 11l4-13c-10-1-16-5-21-10-5-8-7-21-9-34" fill="url(#skin)" stroke="#ca9f88" stroke-width="2"/>
+    <!-- The book has blank pages and no lettering. -->
+    <path d="m331 433 67 30 88-51 12 19-96 65-80-45Z" fill="#9851a7" stroke="#704b88" stroke-width="2.5"/>
+    <path d="m333 432 65 26 85-49 5 13-89 61-69-40Z" fill="#f2e5c5" stroke="#c0ac91" stroke-width="1.7"/>
+    <path d="M336 426c26 4 46 14 64 29 22-20 50-35 79-48l-1 16-78 53-65-39Z" fill="url(#pages)" stroke="#c7b39a" stroke-width="1.7"/>
+    <path d="M400 455v21M338 433c23 5 42 16 58 30M405 464c21-18 45-33 68-44M403 482l85-57" stroke="#d1bc9d" stroke-width="1.5"/>
+    <path d="m396 482 6 10 7-5" stroke="#b97ac0" stroke-width="3"/>
+    <path d="M341 442c4-5 8-7 12-3l9 7c4 2 4 5 1 6l-8-3 5 7c2 4-1 6-4 4l-11-7c-6-3-8-7-4-11Z" fill="url(#skin)" stroke="#ca9f88" stroke-width="1.6"/>
+    <path d="m347 447 8 6m-5-9 9 6" stroke="#d9ac95" stroke-width="1.2"/>
+    <path d="M460 432c1-5 4-10 8-12 4-1 5 2 3 5l-3 5 9-5c4-2 7 1 3 4l-10 9c-4 4-9 2-10-6Z" fill="url(#skin)" stroke="#ca9f88" stroke-width="1.6"/>
+    <!-- Low leaves anchor the scene without a solid background panel. -->
+    <path d="M149 516c-22-13-30-32-26-48 22 4 35 22 26 48ZM151 516c8-22 25-33 44-30-3 21-19 32-44 30Z" fill="#7cb58c" stroke="#568d70" stroke-width="2"/>
+    <path d="m149 509-17-28m23 29 25-16" stroke="#bcdb9e" stroke-width="1.7"/>
+    <path d="M235 530c-7-12-7-21-5-30m8 29 9-21M539 512c4-15 10-26 20-34m-13 38 17-10" stroke="#84b48c" stroke-width="3"/>
+  </g>
+</svg>

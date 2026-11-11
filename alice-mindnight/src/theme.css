@@ -1,5 +1,5 @@
 /*
- * alice-midnight — 1.0.0
+ * alice-mindnight — 1.0.0
  * Inspired by Alice’s blue dress, golden hair, and the shadowed forest.
  * All overrides are scoped to dark mode. Release builds embed the SVG assets.
  */
@@ -14,6 +14,7 @@
   --alice-raised: #302e2c;
   --alice-border: #484542;
   --alice-blue: #65baff;
+  --alice-active-background: #205489;
   --alice-lilac: #c9b6e0;
   --alice-rose: #f1ac8c;
   --alice-gold: #ffd16a;
@@ -111,12 +112,12 @@
   --titlebar-text-color: var(--text-muted);
   --titlebar-text-color-focused: var(--text-normal);
   --tab-container-background: var(--alice-deep);
-  --tab-background-active: var(--background-primary);
+  --tab-background-active: var(--alice-active-background);
   --tab-text-color: var(--text-muted);
-  --tab-text-color-active: var(--alice-blue);
+  --tab-text-color-active: var(--alice-gold);
   --tab-text-color-focused: var(--text-muted);
-  --tab-text-color-focused-active: var(--alice-blue);
-  --tab-text-color-focused-active-current: var(--alice-blue);
+  --tab-text-color-focused-active: var(--alice-gold);
+  --tab-text-color-focused-active-current: var(--alice-gold);
   --tab-text-color-focused-highlighted: var(--alice-lilac);
   --tab-outline-color: var(--alice-border);
   --tab-divider-color: var(--alice-border);
@@ -130,11 +131,11 @@
 
   --nav-item-color: var(--text-muted);
   --nav-item-color-hover: var(--text-normal);
-  --nav-item-color-active: var(--alice-blue);
+  --nav-item-color-active: var(--alice-gold);
   --nav-item-background-hover: var(--background-modifier-hover);
-  --nav-item-background-active: rgb(101 186 255 / 12%);
-  --nav-item-color-selected: var(--alice-blue);
-  --nav-item-background-selected: rgb(101 186 255 / 12%);
+  --nav-item-background-active: var(--alice-active-background);
+  --nav-item-color-selected: var(--alice-gold);
+  --nav-item-background-selected: var(--alice-active-background);
   --nav-item-weight-active: 600;
   --nav-item-children-color: var(--alice-border);
   --nav-collapse-icon-color: var(--text-faint);
@@ -209,9 +210,9 @@
   --code-value: var(--alice-gold);
 
   --table-border-color: var(--alice-border);
-  --table-header-background: var(--alice-raised);
-  --table-header-background-hover: var(--alice-raised);
-  --table-header-color: var(--alice-blue);
+  --table-header-background: #342342;
+  --table-header-background-hover: var(--table-header-background);
+  --table-header-color: var(--alice-text);
   --table-row-alt-background: rgb(101 186 255 / 3%);
   --table-row-background-hover: rgb(101 186 255 / 6%);
   --table-selection: rgb(101 186 255 / 15%);
@@ -251,6 +252,13 @@
   --scrollbar-bg: transparent;
   --scrollbar-thumb-bg: rgb(193 186 177 / 20%);
   --scrollbar-active-thumb-bg: rgb(101 186 255 / 38%);
+}
+
+/* Pick the most contrasting foreground where supported; warm white is the fallback. */
+@supports (color: contrast-color(#342342)) {
+  .theme-dark {
+    --table-header-color: contrast-color(var(--table-header-background));
+  }
 }
 
 /* Native status surfaces share the accent foreground, but use dark backgrounds. */
@@ -448,7 +456,7 @@
   }
 }
 
-/* Center Alice in the note body, outside its scrolling content. */
+/* Center Alice reading beneath the mushroom, outside the scrolling content. */
 .theme-dark .workspace-leaf-content[data-type="markdown"] > .view-content {
   position: relative;
 }
@@ -459,10 +467,12 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 20vw;
-  aspect-ratio: 160 / 150;
-  background: center / contain no-repeat url("./assets/alice-mushroom.svg");
-  opacity: 0.22;
+  width: var(--alice-note-art-width, 20vw);
+  max-width: 80%;
+  max-height: 80%;
+  aspect-ratio: 640 / 600;
+  background: center / contain no-repeat url("./assets/alice-reading.svg");
+  opacity: var(--alice-note-art-opacity, 0.22);
   z-index: 1;
   pointer-events: none;
 }
@@ -538,7 +548,9 @@
 }
 
 .theme-dark .nav-file-title.is-active {
-  box-shadow: inset 2px 0 0 var(--alice-blue);
+  background-color: var(--alice-active-background);
+  color: var(--alice-gold);
+  box-shadow: inset 2px 0 0 var(--alice-gold);
 }
 
 .theme-dark .markdown-rendered pre {
@@ -572,12 +584,42 @@
 }
 
 .theme-dark .workspace-tab-header.is-active .workspace-tab-header-inner-icon {
+  color: var(--alice-gold);
+}
+
+/* Keep active tabs blue and gold, including hover and unfocused tab groups. */
+.theme-dark .workspace-tab-header-container .workspace-tab-header.is-active,
+.theme-dark .workspace-tab-header-container .workspace-tab-header.is-active:hover {
+  background-color: var(--alice-active-background);
+  color: var(--alice-gold);
+}
+
+/* Theme updates also recolor sidebar rows when an older plugin CSS is loaded. */
+.theme-dark .alice-sidebar .alice-sidebar-row.is-active {
+  background: var(--alice-active-background);
+  color: var(--alice-gold);
+}
+
+.theme-dark .alice-sidebar .alice-sidebar-row.is-active > .alice-sidebar-title {
+  color: var(--alice-gold);
+}
+
+/* Pin state alone determines sidebar action colors, even with older plugin CSS. */
+.theme-dark .alice-sidebar .alice-sidebar-row > .alice-sidebar-action:not(.is-pinned) {
   color: var(--alice-blue);
+}
+
+.theme-dark .alice-sidebar .alice-sidebar-row > .alice-sidebar-action.is-pinned {
+  color: var(--alice-gold);
 }
 
 /* Center column headings in reading mode and Live Preview tables. */
 .theme-dark .markdown-rendered th,
 .theme-dark .markdown-source-view.mod-cm6 .cm-table-widget th {
+  --bold-color: var(--table-header-color);
+  --italic-color: var(--table-header-color);
+  background-color: var(--table-header-background);
+  color: var(--table-header-color);
   text-align: center !important;
 }
 

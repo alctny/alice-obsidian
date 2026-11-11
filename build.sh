@@ -5,12 +5,12 @@ set -euo pipefail
 project_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd -- "$project_dir"
 
-echo "Building alice-midnight…"
-node alice-midnight/scripts/build.mjs build
+echo "Building alice-mindnight…"
+node alice-mindnight/scripts/build.mjs build
 
 echo "Building alice-sidebar…"
 node alice-sidebar/build.mjs
 
 echo "Build complete."
-echo "Theme:  $project_dir/dist/alice-midnight/"
+echo "Theme:  $project_dir/dist/alice-mindnight/"
 echo "Plugin: $project_dir/dist/alice-sidebar/"
