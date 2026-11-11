@@ -44,8 +44,8 @@
 }
 
 .alice-sidebar .alice-sidebar-row.is-active {
-  background: var(--alice-active-background, #205489);
-  color: var(--alice-gold, #ffd16a);
+  background: var(--alice-active-background, #461c89);
+  color: var(--alice-gold, #f6d383);
 }
 
 .alice-sidebar button {
@@ -67,7 +67,7 @@
 }
 
 .alice-sidebar .alice-sidebar-row.is-active > .alice-sidebar-title {
-  color: var(--alice-gold, #ffd16a);
+  color: var(--alice-gold, #f6d383);
   font-weight: 600;
 }
 
@@ -78,11 +78,11 @@
 
 /* Action color depends only on pin state, including the current document. */
 .alice-sidebar .alice-sidebar-action:not(.is-pinned) {
-  color: var(--alice-blue, #65baff);
+  color: var(--alice-blue, #77b8b8);
 }
 
 .alice-sidebar .alice-sidebar-action.is-pinned {
-  color: var(--alice-gold, #ffd16a);
+  color: var(--alice-gold, #f6d383);
 }
 
 .alice-sidebar-action svg {

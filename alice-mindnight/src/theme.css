@@ -1,6 +1,6 @@
 /*
  * alice-mindnight — 1.0.0
- * Inspired by Alice’s blue dress, golden hair, and the shadowed forest.
+ * Mystic, Cute Fuchsia, Alana, Washed Out Orange, and Simple Teal.
  * All overrides are scoped to dark mode. Release builds embed the SVG assets.
  */
 
@@ -8,73 +8,82 @@
   color-scheme: dark;
 
   /* Palette: override these in a CSS snippet to make it your own. */
-  --alice-ink: #191c1e;
-  --alice-deep: #121416;
-  --alice-surface: #242729;
-  --alice-raised: #302e2c;
-  --alice-border: #484542;
-  --alice-blue: #65baff;
-  --alice-active-background: #205489;
-  --alice-lilac: #c9b6e0;
-  --alice-rose: #f1ac8c;
-  --alice-gold: #ffd16a;
-  --alice-mint: #9ecbc1;
-  --alice-text: #f4eee5;
-  --alice-muted: #c1bab1;
-  --alice-faint: #a49d96;
+  --alice-mystic: #461c89;
+  --alice-fuchsia: #d57ace;
+  --alice-alana: #f6d383;
+  --alice-orange: #e7b280;
+  --alice-teal: #1c8988;
+  --alice-teal-readable: color-mix(in srgb, var(--alice-teal) 60%, white);
+
+  --alice-ink: #191420;
+  --alice-deep: #121017;
+  --alice-surface: #231b31;
+  --alice-raised: #30243e;
+  --alice-border: #554360;
+  --alice-active-background: var(--alice-mystic);
+  --alice-text: #f5eedf;
+  --alice-muted: #c7bbce;
+  --alice-faint: #a89ab2;
+
+  /* Keep existing snippet and companion-plugin color tokens compatible. */
+  --alice-blue: var(--alice-teal-readable);
+  --alice-lilac: var(--alice-fuchsia);
+  --alice-rose: var(--alice-orange);
+  --alice-gold: var(--alice-alana);
+  --alice-mint: var(--alice-teal-readable);
   --alice-divider-opacity: 40%;
   --alice-divider-opacity-hover: 75%;
 
   /* Native accent controls remain available in Settings → Appearance. */
-  --accent-h: 207;
-  --accent-s: 100%;
-  --accent-l: 70%;
+  --accent-h: 305;
+  --accent-s: 52%;
+  --accent-l: 66%;
 
   --color-base-00: var(--alice-ink);
-  --color-base-05: #1e2123;
+  --color-base-05: #1e1728;
   --color-base-10: var(--alice-surface);
   --color-base-20: var(--alice-raised);
-  --color-base-25: #3a3531;
+  --color-base-25: #40314e;
   --color-base-30: var(--alice-border);
-  --color-base-35: #58514c;
-  --color-base-40: #746a61;
-  --color-base-50: #8d847b;
+  --color-base-35: #6d557c;
+  --color-base-40: #856e94;
+  --color-base-50: #9986a5;
   --color-base-60: var(--alice-faint);
   --color-base-70: var(--alice-muted);
   --color-base-100: var(--alice-text);
 
   --color-red: #f49a95;
-  --color-orange: #f1ac8c;
+  --color-orange: var(--alice-orange);
   --color-yellow: var(--alice-gold);
   --color-green: var(--alice-mint);
-  --color-cyan: #92cfdf;
+  --color-cyan: var(--alice-teal-readable);
   --color-blue: var(--alice-blue);
   --color-purple: var(--alice-lilac);
-  --color-pink: var(--alice-rose);
+  --color-pink: var(--alice-fuchsia);
   /* Compatibility with pre-1.13 callouts and community plugins. */
   --color-red-rgb: 244, 154, 149;
-  --color-orange-rgb: 241, 172, 140;
-  --color-yellow-rgb: 255, 209, 106;
-  --color-green-rgb: 158, 203, 193;
-  --color-cyan-rgb: 146, 207, 223;
-  --color-blue-rgb: 101, 186, 255;
-  --color-purple-rgb: 201, 182, 224;
-  --color-pink-rgb: 241, 172, 140;
+  --color-orange-rgb: 231, 178, 128;
+  --color-yellow-rgb: 246, 211, 131;
+  --color-green-rgb: 119, 184, 184;
+  --color-cyan-rgb: 119, 184, 184;
+  --color-blue-rgb: 119, 184, 184;
+  --color-purple-rgb: 213, 122, 206;
+  --color-pink-rgb: 213, 122, 206;
 
   /* Surfaces and text */
   --background-primary: var(--background-secondary);
   --background-primary-alt: var(--alice-surface);
   --background-secondary: var(--alice-deep);
   --background-secondary-alt: var(--alice-surface);
-  --background-modifier-hover: rgb(101 186 255 / 8%);
-  --background-modifier-active-hover: rgb(101 186 255 / 14%);
+  --background-modifier-hover: color-mix(in srgb, var(--alice-fuchsia) 8%, transparent);
+  --background-modifier-active-hover: color-mix(in srgb, var(--alice-fuchsia) 14%, transparent);
   --background-modifier-border: var(--alice-border);
-  --background-modifier-border-hover: #697f8b;
+  --background-modifier-border-hover: color-mix(in srgb, var(--alice-fuchsia) 45%, var(--alice-border));
   --background-modifier-border-focus: var(--color-accent);
   --background-modifier-form-field: var(--alice-deep);
-  --background-modifier-error: #492b2d;
-  --background-modifier-error-hover: #5b3534;
-  --background-modifier-success: #263e38;
+  --background-modifier-error: color-mix(in srgb, var(--color-red) 18%, var(--alice-deep));
+  --background-modifier-error-hover: color-mix(in srgb, var(--color-red) 25%, var(--alice-deep));
+  --background-modifier-success: color-mix(in srgb, var(--alice-teal) 25%, var(--alice-deep));
   --background-modifier-message: var(--alice-raised);
   --background-modifier-box-shadow: rgb(0 0 0 / 28%);
 
@@ -89,8 +98,8 @@
   --text-warning: var(--alice-gold);
   --text-success: var(--alice-mint);
   --text-selection: color-mix(in srgb, var(--alice-gold) 26%, transparent);
-  --text-highlight-bg: rgb(255 209 106 / 20%);
-  --text-highlight-bg-rgb: 255, 209, 106;
+  --text-highlight-bg: color-mix(in srgb, var(--alice-gold) 20%, transparent);
+  --text-highlight-bg-rgb: 246, 211, 131;
   --caret-color: var(--alice-gold);
 
   --interactive-normal: var(--alice-surface);
@@ -146,24 +155,24 @@
   --icon-color-focused: var(--alice-blue);
 
   /* Reading view and Live Preview share Obsidian's editor tokens. */
-  --h1-color: var(--alice-blue);
+  --h1-color: var(--alice-fuchsia);
   --h2-color: var(--alice-gold);
-  --h3-color: var(--alice-lilac);
-  --h4-color: var(--alice-rose);
-  --h5-color: var(--alice-mint);
+  --h3-color: var(--alice-orange);
+  --h4-color: var(--alice-teal-readable);
+  --h5-color: var(--alice-fuchsia);
   --h6-color: var(--text-muted);
   --h1-weight: 700;
   --h2-weight: 650;
   --h3-weight: 600;
   --heading-spacing: 1.6em;
-  --inline-title-color: var(--alice-blue);
+  --inline-title-color: var(--alice-fuchsia);
   --inline-title-weight: 700;
   --bold-color: var(--alice-rose);
   --italic-color: var(--alice-lilac);
   --link-color: var(--color-accent);
   --link-color-hover: var(--color-accent-2);
   --link-external-color: var(--alice-mint);
-  --link-external-color-hover: #c5e9df;
+  --link-external-color-hover: color-mix(in srgb, var(--alice-teal-readable) 75%, white);
   --link-unresolved-color: var(--alice-lilac);
   --link-unresolved-opacity: 0.85;
   --link-decoration: none;
@@ -173,13 +182,13 @@
 
   --blockquote-border-color: var(--alice-lilac);
   --blockquote-border-thickness: 3px;
-  --blockquote-background-color: rgb(201 182 224 / 6%);
+  --blockquote-background-color: color-mix(in srgb, var(--alice-fuchsia) 6%, transparent);
   --blockquote-color: var(--text-muted);
   --list-marker-color: var(--alice-lilac);
   --list-marker-color-hover: var(--alice-blue);
   --list-marker-color-collapsed: var(--alice-rose);
-  --indentation-guide-color: rgb(193 186 177 / 15%);
-  --indentation-guide-color-active: rgb(101 186 255 / 40%);
+  --indentation-guide-color: color-mix(in srgb, var(--alice-muted) 15%, transparent);
+  --indentation-guide-color-active: color-mix(in srgb, var(--alice-teal-readable) 40%, transparent);
   --checkbox-color: var(--color-accent);
   --checkbox-color-hover: var(--color-accent-1);
   --checkbox-border-color: var(--text-faint);
@@ -188,34 +197,34 @@
   --checklist-done-color: var(--text-faint);
 
   --tag-color: var(--alice-gold);
-  --tag-color-hover: #ffe4a3;
-  --tag-background: rgb(255 209 106 / 11%);
-  --tag-background-hover: rgb(255 209 106 / 18%);
-  --tag-border-color: rgb(255 209 106 / 23%);
-  --tag-border-color-hover: rgb(255 209 106 / 45%);
+  --tag-color-hover: color-mix(in srgb, var(--alice-gold) 75%, white);
+  --tag-background: color-mix(in srgb, var(--alice-gold) 11%, transparent);
+  --tag-background-hover: color-mix(in srgb, var(--alice-gold) 18%, transparent);
+  --tag-border-color: color-mix(in srgb, var(--alice-gold) 23%, transparent);
+  --tag-border-color-hover: color-mix(in srgb, var(--alice-gold) 45%, transparent);
   --tag-border-width: 1px;
   --tag-radius: 6px;
 
   --code-background: var(--alice-surface);
-  --code-normal: #eae4db;
+  --code-normal: var(--alice-text);
   --code-comment: var(--alice-faint);
   --code-function: var(--alice-blue);
   --code-important: var(--alice-rose);
   --code-keyword: var(--alice-lilac);
   --code-operator: var(--alice-rose);
-  --code-property: #92cfdf;
+  --code-property: var(--alice-teal-readable);
   --code-punctuation: var(--text-muted);
   --code-string: var(--alice-mint);
   --code-tag: var(--alice-rose);
   --code-value: var(--alice-gold);
 
   --table-border-color: var(--alice-border);
-  --table-header-background: #342342;
+  --table-header-background: var(--alice-mystic);
   --table-header-background-hover: var(--table-header-background);
   --table-header-color: var(--alice-text);
-  --table-row-alt-background: rgb(101 186 255 / 3%);
-  --table-row-background-hover: rgb(101 186 255 / 6%);
-  --table-selection: rgb(101 186 255 / 15%);
+  --table-row-alt-background: color-mix(in srgb, var(--alice-fuchsia) 3%, transparent);
+  --table-row-background-hover: color-mix(in srgb, var(--alice-fuchsia) 6%, transparent);
+  --table-selection: color-mix(in srgb, var(--alice-teal-readable) 15%, transparent);
   --table-selection-border-color: var(--alice-blue);
   --callout-radius: 10px;
   --callout-border-width: 1px;
@@ -225,7 +234,7 @@
   /* Search, properties, menus and dialogs */
   --search-result-background: var(--alice-surface);
   --search-match-color: var(--alice-gold);
-  --search-match-background: rgb(255 209 106 / 15%);
+  --search-match-background: color-mix(in srgb, var(--alice-gold) 15%, transparent);
   --metadata-label-text-color: var(--text-muted);
   --metadata-input-text-color: var(--text-normal);
   --metadata-border-color: var(--alice-border);
@@ -250,12 +259,12 @@
   --graph-text: var(--text-normal);
   --canvas-background: var(--alice-deep);
   --scrollbar-bg: transparent;
-  --scrollbar-thumb-bg: rgb(193 186 177 / 20%);
-  --scrollbar-active-thumb-bg: rgb(101 186 255 / 38%);
+  --scrollbar-thumb-bg: color-mix(in srgb, var(--alice-muted) 20%, transparent);
+  --scrollbar-active-thumb-bg: color-mix(in srgb, var(--alice-teal-readable) 38%, transparent);
 }
 
 /* Pick the most contrasting foreground where supported; warm white is the fallback. */
-@supports (color: contrast-color(#342342)) {
+@supports (color: contrast-color(#461c89)) {
   .theme-dark {
     --table-header-color: contrast-color(var(--table-header-background));
   }
@@ -273,15 +282,15 @@
   color: var(--text-normal);
 }
 
-/* Settings action buttons use Alice's dress blue. */
+/* Mystic action buttons use Alana text. */
 .theme-dark .modal.mod-settings .setting-item-control button:enabled:not(.mod-warning) {
-  background-color: var(--alice-blue);
-  color: var(--alice-deep);
+  background-color: var(--alice-mystic);
+  color: var(--alice-gold);
 }
 
 @media (hover: hover) {
   .theme-dark .modal.mod-settings .setting-item-control button:enabled:not(.mod-warning):hover {
-    background-color: color-mix(in srgb, var(--alice-blue) 85%, white);
+    background-color: color-mix(in srgb, var(--alice-mystic) 85%, white);
   }
 }
 
@@ -338,33 +347,33 @@
 
 .theme-dark .markdown-rendered pre,
 .theme-dark .cm-s-obsidian div.HyperMD-codeblock-bg {
-  --code-background: color-mix(in srgb, var(--alice-blue) 20%, var(--alice-ink));
+  --code-background: color-mix(in srgb, var(--alice-mystic) 25%, var(--alice-ink));
 }
 
 .theme-dark .markdown-rendered :not(pre) > code,
 .theme-dark .cm-s-obsidian span.cm-inline-code:not(.cm-hmd-indented-code) {
   /* Let CodeMirror's selection layer show through the inline code background. */
-  --code-background: color-mix(in srgb, var(--alice-blue) 28%, transparent);
+  --code-background: color-mix(in srgb, var(--alice-teal) 28%, transparent);
   --text-selection: color-mix(in srgb, var(--alice-gold) 40%, transparent);
 }
 
 .theme-dark .modal.mod-file-browser:has(.file-browser-description) {
-  --alice-attachment-button-blue: #205489;
+  --alice-attachment-button-background: var(--alice-mystic);
 }
 
 .theme-dark .modal.mod-file-browser:has(.file-browser-description) button.mod-warning:enabled {
-  background-color: var(--alice-attachment-button-blue);
+  background-color: var(--alice-attachment-button-background);
   color: var(--alice-gold);
 }
 
 .theme-dark .modal.mod-file-browser:has(.file-browser-description) button.mod-cancel {
   background-color: var(--alice-gold);
-  color: var(--alice-attachment-button-blue);
+  color: var(--alice-attachment-button-background);
 }
 
 @media (hover: hover) {
   .theme-dark .modal.mod-file-browser:has(.file-browser-description) button.mod-warning:enabled:hover {
-    background-color: #285f98;
+    background-color: color-mix(in srgb, var(--alice-mystic) 85%, white);
   }
 
   .theme-dark .modal.mod-file-browser:has(.file-browser-description) button.mod-cancel:hover {
@@ -398,11 +407,11 @@
 .theme-dark .cm-line .cm-hashtag-begin:nth-child(even of .cm-hashtag-begin),
 .theme-dark .cm-line .cm-hashtag-begin:nth-child(even of .cm-hashtag-begin) + .cm-hashtag-end:not(.cm-hashtag-begin) {
   --tag-color: var(--alice-blue);
-  --tag-color-hover: #b7dfff;
-  --tag-background: rgb(101 186 255 / 11%);
-  --tag-background-hover: rgb(101 186 255 / 18%);
-  --tag-border-color: rgb(101 186 255 / 23%);
-  --tag-border-color-hover: rgb(101 186 255 / 45%);
+  --tag-color-hover: color-mix(in srgb, var(--alice-teal-readable) 75%, white);
+  --tag-background: color-mix(in srgb, var(--alice-teal-readable) 11%, transparent);
+  --tag-background-hover: color-mix(in srgb, var(--alice-teal-readable) 18%, transparent);
+  --tag-border-color: color-mix(in srgb, var(--alice-teal-readable) 23%, transparent);
+  --tag-border-color-hover: color-mix(in srgb, var(--alice-teal-readable) 45%, transparent);
 }
 
 /* Keep the outline toolbar hidden. */
@@ -490,41 +499,112 @@
   margin-inline: auto;
 }
 
-/* Small finishing details. */
+/* Property controls sit on the bottom divider without replacing native actions. */
+.theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) {
+  --alice-properties-title-gap: 1rem;
+}
+
+.theme-dark.show-inline-title :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .inline-title:has(+ .metadata-container) {
+  margin-block-end: var(--alice-properties-title-gap);
+}
+
 .theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-container {
+  --alice-properties-control-size: 28px;
   position: relative;
   border-block-end: 1px solid var(--alice-border);
   border-radius: 0;
-  padding-block: 0.5em;
-  margin-block-end: 1.25em;
+  padding-block: 0.5em calc(var(--alice-properties-control-size) / 2 + 0.5em);
+  margin-block-end: calc(var(--alice-properties-control-size) / 2 + 1.25em);
 }
 
 .theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-properties-title {
   display: none;
 }
 
+.theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-properties-heading {
+  position: absolute;
+  inset: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* The native heading receives clicks only from this gap and its footer arrow. */
+.theme-dark.show-inline-title :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-properties-heading::before {
+  inset-block-start: calc(-1 * var(--alice-properties-title-gap));
+  inset-block-end: auto;
+  height: calc(var(--alice-properties-title-gap) + 0.5em);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 .theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-properties-heading .collapse-indicator {
-  position: static;
-  padding-inline-start: 0;
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-end: 0;
+  transform: translateY(50%);
+  width: var(--alice-properties-control-size);
+  height: var(--alice-properties-control-size);
+  justify-content: center;
+  padding: 0;
   opacity: 1;
+  background-color: var(--background-primary);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-properties-heading .collapse-indicator svg.svg-icon {
+  transform: rotate(180deg);
+}
+
+.theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-container.is-collapsed .metadata-properties-heading .collapse-indicator svg.svg-icon {
+  transform: none;
 }
 
 .theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-container .metadata-add-button {
   position: absolute;
-  inset-block-start: 0.5em;
-  inset-inline-start: 2.5em;
+  inset-block-start: auto;
+  inset-block-end: 0;
+  inset-inline-start: calc(var(--alice-properties-control-size) + var(--size-4-1));
+  transform: translateY(50%);
+  height: var(--alice-properties-control-size);
+  max-width: calc(100% - var(--alice-properties-control-size) - var(--size-4-1));
   margin-block-start: 0;
+  padding-inline: 0.35em;
+  background-color: var(--background-primary);
+  z-index: 1;
+}
+
+.theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-content {
+  /* Obsidian hides this wrapper inline on collapse. Keep its footer action visible
+     and omit the wrapper box so native collapse animations cannot clip it. */
+  display: contents !important;
+}
+
+.theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-container.is-collapsed .metadata-properties {
+  display: none;
+}
+
+.theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-add-button .text-button-label {
+  display: none;
+}
+
+.theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-add-button::after {
+  content: "Property";
+}
+
+.theme-dark.is-mobile :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-container {
+  --alice-properties-control-size: 44px;
 }
 
 .theme-dark.is-mobile :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.theme-dark.is-mobile :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-container .metadata-add-button {
-  position: static;
-  order: -1;
-  align-self: flex-start;
+  /* Keep the note container as the positioned footer's containing block. */
+  transform: none;
+  width: auto;
+  padding: 0;
+  background-color: transparent;
 }
 
 .theme-dark :is(.markdown-preview-view, .markdown-source-view.is-live-preview) .metadata-property {
@@ -587,7 +667,7 @@
   color: var(--alice-gold);
 }
 
-/* Keep active tabs blue and gold, including hover and unfocused tab groups. */
+/* Keep active tabs Mystic and Alana, including hover and unfocused tab groups. */
 .theme-dark .workspace-tab-header-container .workspace-tab-header.is-active,
 .theme-dark .workspace-tab-header-container .workspace-tab-header.is-active:hover {
   background-color: var(--alice-active-background);
@@ -739,7 +819,7 @@
   padding-top: 8px;
 }
 
-/* Blue-to-gold separators. Paint existing borders without changing layout. */
+/* Readable Teal-to-Alana separators. Paint existing borders without changing layout. */
 .theme-dark :is(
   .workspace-leaf-resize-handle,
   .workspace-tab-header-container,
