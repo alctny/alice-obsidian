@@ -17,7 +17,7 @@ async function temporaryDirectory(t) {
 test('release embeds every original SVG and preserves all other CSS', async t => {
   const themeDir = await temporaryDirectory(t);
   const result = await buildTheme({ themeDir });
-  assert.equal(result.assetCount, 8);
+  assert.equal(result.assetCount, 11);
   assert.doesNotMatch(result.css, /url\(["']\.\/assets\//);
   const source = await readFile(join(projectDir, 'src/theme.css'), 'utf8');
   const references = [...source.matchAll(/url\("(\.\/assets\/[^"\n]+\.svg)"\)/g)];
@@ -42,10 +42,10 @@ test('dev deploys SVG files, uses encoded resource URLs and refreshes cache vers
     resourceBase: 'app://local/測試 Vault/.obsidian/themes/Alice Midnight/assets?old=123',
   };
   const first = await buildTheme(options);
-  assert.equal(first.assetCount, 8);
+  assert.equal(first.assetCount, 11);
   assert.doesNotMatch(first.css, /data:image/);
   const urls = [...first.css.matchAll(/url\("(app:[^"]+)"\)/g)].map(match => new URL(match[1]));
-  assert.equal(new Set(urls.map(url => url.pathname)).size, 8);
+  assert.equal(new Set(urls.map(url => url.pathname)).size, 11);
   for (const url of urls) {
     assert.match(url.pathname, /^\/%E6%B8%AC%E8%A9%A6%20Vault\/\.obsidian\/themes\/Alice%20Midnight\/assets\//);
     assert.ok(url.searchParams.get('v'));

@@ -632,12 +632,13 @@
 
 .theme-dark .workspace-tab-header :is(.workspace-tab-header-inner-close-button svg, .workspace-tab-header-inner-icon svg.lucide-pin) {
   background-color: var(--alice-blue);
-  mask: url("./assets/mushroom.svg") center / contain no-repeat;
+  mask: url("./assets/teacup.svg") center / contain no-repeat;
 }
 
 .theme-dark .workspace-tab-header:is(.is-pinned, :has(.lucide-pin), :has([data-lucide="pin"])) .workspace-tab-header-inner-close-button svg,
 .theme-dark .workspace-tab-header .workspace-tab-header-inner-icon svg.lucide-pin {
   background-color: var(--alice-gold);
+  mask: url("./assets/teapot.svg") center / contain no-repeat;
 }
 
 .theme-dark .workspace-tab-header :is(.workspace-tab-header-inner-close-button svg, .workspace-tab-header-inner-icon svg.lucide-pin) > * {
@@ -647,7 +648,7 @@
 /* Pinned tabs render their pin in the status area, outside the close action. */
 .theme-dark .workspace-tab-header :is(svg.lucide-pin, svg[data-lucide="pin"], .workspace-tab-header-status-icon:has(.lucide-pin) svg) {
   background-color: var(--alice-gold);
-  mask: url("./assets/mushroom.svg") center / contain no-repeat;
+  mask: url("./assets/teapot.svg") center / contain no-repeat;
 }
 
 .theme-dark .workspace-tab-header :is(svg.lucide-pin, svg[data-lucide="pin"], .workspace-tab-header-status-icon:has(.lucide-pin) svg) > * {
@@ -664,4 +665,338 @@
   --header-height: 32px;
   --tab-height: 28px;
   --titlebar-height: 32px;
+}
+
+/* Desktop document tabs: a right-edge drawer over the note, without reflow. */
+@media (hover: hover) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) {
+    position: relative;
+    overflow: visible;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 220px;
+    height: 100%;
+    max-height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 8px;
+    background: var(--background-secondary);
+    border-inline-start: 1px solid var(--background-modifier-border);
+    border-radius: 10px 0 0 10px;
+    box-shadow: -8px 0 24px rgb(0 0 0 / 20%);
+    z-index: 20;
+    /* Leave an invisible eight-pixel strip inside the window as the target. */
+    clip-path: inset(0 0 0 calc(100% - 8px));
+    opacity: 0;
+    transition: clip-path 180ms ease 200ms, opacity 180ms ease 200ms;
+    -webkit-app-region: no-drag;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container:is(:hover, :focus-within) {
+    clip-path: inset(0);
+    opacity: 1;
+    transition-delay: 0ms;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 4px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    border-radius: 6px;
+    box-shadow: none;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header::before,
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header::after {
+    display: none;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-inner {
+    width: 100%;
+    height: 100%;
+    padding: 0 8px;
+    box-sizing: border-box;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-inner-title {
+    text-align: start;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header.is-active {
+    background: var(--background-modifier-hover);
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-spacer {
+    display: none;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container :is(.workspace-tab-header-new-tab, .workspace-tab-header-tab-list) {
+    flex: 0 0 auto;
+    align-self: center;
+    margin: 4px 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
+    transition: none;
+  }
+}
+
+/* Anchor the drawer to the window edge, including when the right dock is open. */
+@media (hover: hover) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
+    position: fixed;
+    inset-block-start: var(--header-height);
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    height: auto;
+    max-height: none;
+    z-index: 100;
+    /* Keep the whole open drawer hit-testable while its tab children change. */
+    pointer-events: auto;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container:has(:hover) {
+    clip-path: inset(0);
+    opacity: 1;
+    transition-delay: 0ms;
+  }
+
+  /* Obsidian applies draggable regions to the native tab strip. */
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container,
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container * {
+    -webkit-app-region: no-drag;
+  }
+}
+
+/* Floating tab ribbons: transparent drawer, staggered widths, active emphasis. */
+@media (hover: hover) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding-inline: 8px 0;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container :is(.workspace-tab-header-new-tab, .workspace-tab-header-tab-list) {
+    display: none;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
+    background: transparent;
+    align-items: flex-end;
+    gap: 7px;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header {
+    width: 82%;
+    align-self: flex-end;
+    border-radius: 7px 0 0 7px;
+    background: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    border-inline-end: 0;
+    transition: width 160ms ease, background-color 160ms ease;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header:nth-child(3n + 2) {
+    width: 90%;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header:nth-child(3n) {
+    width: 76%;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header.is-active {
+    width: 100%;
+    background: color-mix(in srgb, var(--alice-blue) 16%, var(--background-secondary));
+    border-color: color-mix(in srgb, var(--alice-blue) 55%, var(--background-modifier-border));
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header.is-active .workspace-tab-header-inner-title {
+    color: var(--alice-blue);
+    font-weight: 600;
+  }
+}
+
+/* Lift an individual tab ribbon on hover. */
+@media (hover: hover) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header {
+    transition: width 160ms ease, background-color 160ms ease,
+      transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header:hover {
+    transform: translateX(-5px);
+    background: color-mix(in srgb, var(--alice-blue) 22%, var(--background-secondary));
+    border-color: var(--alice-blue);
+    box-shadow: -3px 4px 12px rgb(0 0 0 / 30%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header {
+    transition: none;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header:hover {
+    transform: none;
+  }
+}
+
+/* Reserve space inside the scroll viewport for the longest ribbon's lift. */
+@media (hover: hover) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
+    box-sizing: border-box;
+    padding-inline-start: 10px;
+  }
+}
+
+/* Hide the vertical tab drawer's scrollbar while preserving scrolling. */
+@media (hover: hover) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
+    scrollbar-width: none;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Hide note scrollbars in Reading view and the editor without disabling scroll. */
+.theme-dark .workspace-leaf-content[data-type="markdown"] :is(.markdown-preview-view, .cm-scroller) {
+  scrollbar-width: none;
+}
+
+.theme-dark .workspace-leaf-content[data-type="markdown"] :is(.markdown-preview-view, .cm-scroller)::-webkit-scrollbar {
+  display: none;
+}
+
+/* Remove the native horizontal strip's reserved end space in the drawer. */
+@media (hover: hover) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
+    --tab-container-end-spacing: 0px;
+    padding-inline-end: 0;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
+    padding-inline-end: 0;
+    margin-inline-end: 0;
+    max-width: none;
+    align-self: stretch;
+  }
+}
+
+/* Override macOS top-corner chrome padding retained by the native tab strip. */
+@media (hover: hover) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
+    padding-right: 0 !important;
+    padding-left: 8px !important;
+  }
+}
+
+/* Keep complete rounded ribbons inset from the window edge; show a tab count. */
+@media (hover: hover) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
+    counter-reset: alice-open-tabs;
+    padding-right: 8px !important;
+    padding-top: 38px;
+    clip-path: none;
+    opacity: 1;
+    pointer-events: none;
+    transition: none;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container::after {
+    content: "* " counter(alice-open-tabs);
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    min-width: 48px;
+    height: 26px;
+    box-sizing: border-box;
+    padding: 3px 8px 3px 28px;
+    color: var(--alice-blue);
+    background: url("./assets/oyster-blue.svg") 6px center / 18px 18px no-repeat var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 7px;
+    font-size: 12px;
+    line-height: 18px;
+    pointer-events: auto;
+    -webkit-app-region: no-drag;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header {
+    counter-increment: alice-open-tabs;
+    border-radius: 7px;
+    border-inline-end: 1px solid var(--background-modifier-border);
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container .workspace-tab-header-container-inner {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 180ms ease 200ms, visibility 0s linear 380ms;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container:is(:hover, :focus-within) {
+    pointer-events: auto;
+  }
+
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container:is(:hover, :focus-within) .workspace-tab-header-container-inner {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0ms;
+  }
+}
+
+/* Hide the right sidebar toggle in the desktop title bar. */
+.theme-dark:not(.is-mobile) .sidebar-toggle-button.mod-right {
+  display: none;
+}
+
+/* Remove the note pane's native header now that tabs live in the drawer. */
+.theme-dark:not(.is-mobile) .mod-root .workspace-leaf-content[data-type="markdown"] > .view-header {
+  display: none;
+}
+
+@media (hover: hover) {
+  .theme-dark:not(.is-mobile) .mod-root .workspace-tabs:not(.mod-stacked) > .workspace-tab-header-container {
+    inset-block-start: 0;
+  }
+}
+
+/* Bring the inline filename up by removing the note's default top inset. */
+.theme-dark:not(.is-mobile) .mod-root .workspace-leaf-content[data-type="markdown"] .markdown-source-view.mod-cm6 .cm-scroller {
+  padding-top: 8px;
+}
+
+.theme-dark:not(.is-mobile) .mod-root .workspace-leaf-content[data-type="markdown"] .markdown-preview-view {
+  padding-top: 8px;
 }
