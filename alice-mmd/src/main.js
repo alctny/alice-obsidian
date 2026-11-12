@@ -56,7 +56,15 @@ class MermaidView extends TextFileView {
     if (this.app.vault?.on) this.registerEvent(this.app.vault.on('rename', (file) => {
       if (file === this.file) this.syncFilename();
     }));
-    const controls = this.contentEl.createDiv({ cls: 'alice-mmd-toolbar alice-mmd-controls' });
+    const controls = this.controls = this.contentEl.createDiv({ cls: 'alice-mmd-toolbar alice-mmd-controls' });
+    controls.addEventListener('pointerenter', () => {
+      this.controlsHovered = true;
+      this.showControls();
+    });
+    controls.addEventListener('pointerleave', () => {
+      this.controlsHovered = false;
+      this.showControls();
+    });
     this.toggle = controls.createEl('button', { cls: 'alice-mmd-mode' });
     this.modeIcon = this.toggle.createSpan({ attr: { 'aria-hidden': 'true' } });
     this.modeLabel = this.toggle.createSpan();
@@ -89,6 +97,7 @@ class MermaidView extends TextFileView {
     this.miniMap.hidden = true;
     this.miniMap.addEventListener('pointerenter', () => {
       this.mapHovered = true;
+      this.miniMap.removeClass('is-idle');
       clearTimeout(this.miniMapTimer);
     });
     this.miniMap.addEventListener('pointerleave', () => {
@@ -227,6 +236,7 @@ class MermaidView extends TextFileView {
     this.miniMap.hidden = visibleWidth <= 0 || visibleHeight <= 0 ||
       (diagramWidth <= visibleWidth + 1 && diagramHeight <= visibleHeight + 1);
     if (this.miniMap.hidden) return;
+    this.miniMap.removeClass('is-idle');
     const scale = this.mapScale = Math.min(180 / width, 120 / height, visibleWidth * 0.4 / width);
     this.miniMap.style.width = `${width * scale}px`;
     this.miniMap.style.height = `${height * scale}px`;
@@ -243,9 +253,9 @@ class MermaidView extends TextFileView {
     clearTimeout(this.miniMapTimer);
     if (!this.miniMap || this.miniMap.hidden || this.mapHovered || this.mapDragging || this.closed) return;
     this.miniMapTimer = setTimeout(() => {
-      this.miniMap.hidden = true;
+      this.miniMap.addClass('is-idle');
       this.miniMapTimer = null;
-    }, 1500);
+    }, 500);
   }
 
   updateModeButton() {
@@ -276,11 +286,22 @@ class MermaidView extends TextFileView {
     if (editing) this.editor.focus();
   }
 
+  showControls() {
+    if (!this.controls || this.closed) return;
+    clearTimeout(this.controlsTimer);
+    this.controls.addClass('is-visible');
+    if (!this.controlsHovered) this.controlsTimer = setTimeout(() => {
+      this.controls.removeClass('is-visible');
+      this.controlsTimer = null;
+    }, 500);
+  }
+
   setZoom(value, anchor) {
     const next = Math.min(20, Math.max(0.05, value));
     if (!Number.isFinite(next)) return;
     const previous = this.zoom;
     this.zoom = next;
+    if (next !== previous) this.showControls();
     if (this.zoomReset) this.zoomReset.textContent = `${Math.round(next * 100)}%`;
     if (!this.diagramEl || !this.diagramSize) return;
     const point = anchor ?? { x: this.preview.clientWidth / 2, y: this.preview.clientHeight / 2 };
@@ -442,6 +463,7 @@ class MermaidView extends TextFileView {
 
   async onClose() {
     this.closed = true;
+    clearTimeout(this.controlsTimer);
     clearTimeout(this.miniMapTimer);
     this.resizeObserver?.disconnect();
     this.drag = null;

@@ -317,6 +317,9 @@ test('Mod+0 resets only the active Mermaid preview and checking does not change 
 test('minimap auto-hides after idle and reappears on viewport interaction', async () => {
   const runtime = load();
   const view = await openView(runtime);
+  const classes = new Set();
+  view.miniMap.addClass = (name) => classes.add(name);
+  view.miniMap.removeClass = (name) => classes.delete(name);
   view.diagramEl = element();
   view.diagramSize = { width: 800, height: 600 };
   view.updateMiniMap();
@@ -325,9 +328,11 @@ test('minimap auto-hides after idle and reappears on viewport interaction', asyn
   view.preview.handlers.scroll.callback();
   assert.equal(runtime.timers.has(firstTimer), false);
   runtime.timers.get(view.miniMapTimer)();
-  assert.equal(view.miniMap.hidden, true);
+  assert.equal(view.miniMap.hidden, false); // Keep rendered while CSS fades it out.
+  assert.equal(classes.has('is-idle'), true);
   view.setZoom(2);
   assert.equal(view.miniMap.hidden, false);
+  assert.equal(classes.has('is-idle'), false);
   view.miniMap.handlers.pointerenter.callback();
   assert.equal(runtime.timers.has(view.miniMapTimer), false);
   view.updateMiniMap();
@@ -745,4 +750,29 @@ test('Escape cancels filename edits, Enter blurs, and IME confirmation is ignore
   assert.equal(blurs, 1);
   keydown({ key: 'Enter', preventDefault() {} });
   assert.equal(blurs, 2);
+});
+
+test('floating controls appear on zoom, stay visible while hovered, and hide after idle', async () => {
+  const runtime = load();
+  const view = await openView(runtime);
+  let visible = false;
+  view.controls.addClass = () => { visible = true; };
+  view.controls.removeClass = () => { visible = false; };
+  view.setZoom(1.2);
+  assert.equal(visible, true);
+  const first = view.controlsTimer;
+  view.setZoom(1.4);
+  assert.equal(runtime.timers.has(first), false);
+  view.controls.handlers.pointerenter.callback();
+  assert.equal(runtime.timers.has(view.controlsTimer), false);
+  assert.equal(visible, true);
+  view.controls.handlers.pointerleave.callback();
+  const hide = runtime.timers.get(view.controlsTimer);
+  assert.equal(typeof hide, 'function');
+  hide();
+  assert.equal(visible, false);
+  view.setZoom(1.6);
+  const pending = view.controlsTimer;
+  await view.onClose();
+  assert.equal(runtime.timers.has(pending), false);
 });
