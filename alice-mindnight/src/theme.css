@@ -755,6 +755,15 @@
   display: none;
 }
 
+/* Hide file list scrollbars while preserving scrolling. */
+.theme-dark .workspace-leaf-content[data-type="file-explorer"] .nav-files-container {
+  scrollbar-width: none;
+}
+
+.theme-dark .workspace-leaf-content[data-type="file-explorer"] .nav-files-container::-webkit-scrollbar {
+  display: none;
+}
+
 /* A fading Cheshire Cat stays at the foot of the file list while it scrolls. */
 .theme-dark .workspace-leaf-content[data-type="file-explorer"]::after {
   content: "";
