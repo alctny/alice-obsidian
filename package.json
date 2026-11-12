@@ -8,8 +8,9 @@
   "scripts": {
     "build": "npm run build:theme && npm run build:plugin",
     "build:theme": "node alice-mindnight/scripts/build.mjs build",
-    "build:plugin": "node alice-sidebar/build.mjs",
+    "build:plugin": "node alice-sidebar/build.mjs && npm --prefix alice-mmd run build",
     "dev": "node alice-mindnight/scripts/build.mjs dev",
-    "test": "node --test alice-mindnight/scripts/build.test.mjs alice-sidebar/tests/*.test.mjs"
+    "test": "node --test alice-mindnight/scripts/build.test.mjs alice-sidebar/tests/*.test.mjs alice-mmd/tests/*.test.mjs",
+    "build:mmd": "npm --prefix alice-mmd run build"
   }
 }

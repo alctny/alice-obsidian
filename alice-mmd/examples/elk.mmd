@@ -1,0 +1,22 @@
+---
+title: Alice MMD 範例
+config:
+  layout: elk
+  theme: base
+  themeVariables:
+    primaryColor: '#461c89'
+    primaryTextColor: '#f5eedf'
+    primaryBorderColor: '#d57ace'
+    lineColor: '#77b8b8'
+  flowchart:
+    curve: basis
+  elk:
+    mergeEdges: true
+    nodePlacementStrategy: NETWORK_SIMPLEX
+---
+flowchart TD
+  A[讀取 .mmd 文件] --> B{包含 config？}
+  B -->|是| C[套用文件配置]
+  B -->|否| D[使用預設配置]
+  C --> E[渲染圖表]
+  D --> E

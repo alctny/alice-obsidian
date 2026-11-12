@@ -1,0 +1,9 @@
+{
+  "id": "alice-mmd",
+  "name": "alice-mmd",
+  "version": "1.0.0",
+  "minAppVersion": "1.10.6",
+  "description": "Render and edit .mmd files with Mermaid frontmatter configuration and ELK layouts.",
+  "author": "Alice",
+  "isDesktopOnly": false
+}
