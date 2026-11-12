@@ -4,18 +4,28 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { translate } from '../src/i18n.js';
 import { MermaidOutline, sourcePosition } from '../src/outline.js';
+import { mermaidBlockAt } from '../src/blocks.js';
 
 const main = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
 function load(language = 'zh-TW') {
   const timers = new Map();
+  const notices = [];
   let nextTimer = 0;
   const context = vm.createContext({
-    MermaidOutline, sourcePosition, addIcon() {}, setIcon(element, icon) { element.icon = icon; },
+    MermaidOutline, sourcePosition, mermaidBlockAt, addIcon() {}, setIcon(element, icon) { element.icon = icon; },
     translate, getLanguage: () => language,
-    Plugin: class { registerEvent() {} }, TextFileView: class {},
+    document: {}, Menu: class { showAtMouseEvent() {} },
+    Plugin: class {
+      registerEvent() {}
+      registerMarkdownPostProcessor(callback) { this.postProcessor = callback; }
+      registerDomEvent(_element, type, callback, capture) {
+        this.domEvents ??= {};
+        this.domEvents[type] = { callback, capture };
+      }
+    }, TextFileView: class {},
     TFolder: class { constructor(path) { this.path = path; } },
     normalizePath: path => path.replace(/\\/g, '/'),
-    Notice: class { constructor(message) { throw new Error(message); } },
+    Notice: class { constructor(message) { notices.push(message); } },
     mermaid: { initialize() {}, registerLayoutLoaders() {} }, elkLayouts: [],
     createRenderer: () => async () => ({ svg: '<svg/>' }), parseYaml() {},
     setTimeout(fn) { timers.set(++nextTimer, fn); return nextTimer; },
@@ -24,7 +34,7 @@ function load(language = 'zh-TW') {
   vm.runInContext(main.replace(/^import .*;\n/gm, '')
     .replace('export default class AliceMmdPlugin', 'class AliceMmdPlugin') +
     '\nthis.View = MermaidView; this.PluginClass = AliceMmdPlugin;', context);
-  return { View: context.View, PluginClass: context.PluginClass, TFolder: context.TFolder, timers };
+  return { View: context.View, PluginClass: context.PluginClass, TFolder: context.TFolder, timers, notices };
 }
 
 test('file data replacement updates source and supersedes pending renders', () => {
@@ -451,4 +461,288 @@ test('one mode button toggles both ways and updates its label, icon and action',
   assert.equal(view.modeLabel.textContent, 'Preview');
   assert.equal(view.modeIcon.icon, 'alice-mmd-mermaid');
   assert.equal(view.editor.hidden, true);
+});
+
+test('moving a block creates a sibling .mmd before removing only that block', async () => {
+  const { PluginClass } = load();
+  for (const folder of ['notes', '/']) {
+    const plugin = new PluginClass();
+    const source = '# Note\n```mermaid\nA --> B\n```\nTail';
+    let markdown = source;
+    let created;
+    let opened;
+    plugin.app = {
+      vault: {
+        getAbstractFileByPath() { return null; },
+        async read() { return markdown; },
+        async create(path, data) {
+          assert.equal(markdown, source);
+          created = { path, data }; return created;
+        },
+        async process(_file, transform) { markdown = transform(markdown); },
+      },
+      workspace: { getLeaf() { return { async openFile(file) { opened = file; } }; } },
+    };
+    await plugin.moveMermaidBlock({ basename: 'Note', parent: { path: folder } }, source, mermaidBlockAt(source, 2));
+    assert.equal(created.path, folder === '/' ? 'Note.mmd' : 'notes/Note.mmd');
+    assert.equal(created.data, 'A --> B\n');
+    assert.equal(markdown, '# Note\nTail');
+    assert.equal(opened, created);
+  }
+});
+
+test('failed creation leaves the Markdown block intact', async () => {
+  const { PluginClass, notices } = load('en');
+  const source = '```mermaid\nA --> B\n```';
+  for (const collision of [true, false]) {
+    const plugin = new PluginClass();
+    let removals = 0;
+    plugin.app = { vault: {
+      getAbstractFileByPath(path) { return collision && path === 'Note.mmd'; },
+      async read() { return source; },
+      async create() { throw new Error('disk full'); },
+      async process() { removals++; },
+    } };
+    await plugin.moveMermaidBlock({ basename: 'Note', parent: { path: '/' } }, source, mermaidBlockAt(source, 1));
+    assert.equal(removals, 0);
+  }
+  assert.match(notices[0], /disk full/);
+  assert.match(notices[1], /disk full/);
+});
+
+test('editor extraction uses the current buffer and preserves surrounding edits', async () => {
+  const { PluginClass } = load();
+  const plugin = new PluginClass();
+  const source = 'Unsaved heading\n```mermaid\nA --> B\n```\nTail';
+  let markdown = source;
+  const editor = {
+    getValue() { return markdown; }, offsetToPos(offset) { return offset; },
+    replaceRange(text, start, end) { markdown = markdown.slice(0, start) + text + markdown.slice(end); },
+  };
+  plugin.app = {
+    vault: {
+      getAbstractFileByPath() { return null; },
+      async read() { return 'Saved older heading'; },
+      async create(path, data) { return { path, data }; },
+      async process(_file, transform) { assert.equal(transform('Saved older heading'), 'Unsaved heading\nTail'); },
+    },
+    workspace: { getLeaf() { return { async openFile() {} }; } },
+  };
+  await plugin.moveMermaidBlock({ basename: 'Note', parent: { path: '/' } }, source, mermaidBlockAt(source, 2), editor);
+  assert.equal(markdown, 'Unsaved heading\nTail');
+});
+
+test('existing filenames get a 13-character alphanumeric suffix, retrying collisions', async () => {
+  const { PluginClass } = load();
+  const plugin = new PluginClass();
+  const source = '```mermaid\nA --> B\n```';
+  let checks = 0;
+  let createdPath;
+  plugin.app = {
+    vault: {
+      getAbstractFileByPath() { return ++checks <= 2; },
+      async read() { return source; },
+      async create(path) { createdPath = path; return { path }; },
+      async process(_file, transform) { assert.equal(transform(source), ''); },
+    },
+    workspace: { getLeaf() { return { async openFile() {} }; } },
+  };
+  await plugin.moveMermaidBlock({ basename: 'Note', parent: { path: 'notes' } }, source, mermaidBlockAt(source, 1));
+  assert.match(createdPath, /^notes\/Note-[A-Za-z0-9]{13}\.mmd$/);
+  assert.equal(checks, 3);
+});
+
+test('EACCES preserves the editor block and opens the successfully created diagram', async () => {
+  const { PluginClass, notices } = load('en');
+  const plugin = new PluginClass();
+  const source = '```mermaid\nA --> B\n```';
+  let opened;
+  const editor = { getValue: () => source, replaceRange() { assert.fail('must keep the original block'); } };
+  plugin.app = {
+    vault: {
+      getAbstractFileByPath() { return null; },
+      async read() { return source; },
+      async create(path) { return { path }; },
+      async process() { throw new Error('EACCES: permission denied'); },
+    },
+    workspace: { getLeaf() { return { async openFile(file) { opened = file.path; } }; } },
+  };
+  await plugin.moveMermaidBlock({ basename: 'Note', parent: { path: '/' } }, source, mermaidBlockAt(source, 1), editor);
+  assert.equal(opened, 'Note.mmd');
+  assert.match(notices[0], /original block was kept/);
+  assert.match(notices[0], /EACCES/);
+});
+
+test('Live Preview context menu resolves the clicked diagram rather than the cursor', async () => {
+  const { PluginClass } = load();
+  const plugin = new PluginClass();
+  const source = '```mermaid\nA --> B\n```\n\n```mermaid\nC --> D\n```';
+  const target = { closest: () => true };
+  const editor = {
+    getValue: () => source,
+    cm: { posAtDOM: () => source.indexOf('C --> D') },
+    offsetToPos: (offset) => ({ line: source.slice(0, offset).split('\n').length - 1 }),
+  };
+  const file = { extension: 'md' };
+  plugin.app = { workspace: {
+    on(name, callback) { if (name === 'editor-menu') plugin.testEditorMenu = callback; }, onLayoutReady() {},
+    getLeavesOfType: () => [{ view: { file, editor, contentEl: { contains: () => true } } }],
+  } };
+  plugin.registerView = () => {};
+  plugin.registerExtensions = () => {};
+  plugin.addCommand = () => {};
+  await plugin.onload();
+  let selected;
+  plugin.addBlockMenuItem = (_menu, actualFile, _source, block, actualEditor) => {
+    assert.equal(actualFile, file);
+    assert.equal(actualEditor, editor);
+    selected = block.content;
+  };
+  const event = {
+    target: { closest: () => target },
+    preventDefault() {}, stopImmediatePropagation() {},
+  };
+  assert.equal(plugin.domEvents.contextmenu.capture, true);
+  plugin.domEvents.contextmenu.callback(event);
+  plugin.testEditorMenu({}, editor, { file });
+  assert.equal(selected, 'C --> D\n');
+});
+
+test('preview widgets resolve through their visual source range when DOM positions point at the following heading', async () => {
+  const { PluginClass } = load();
+  for (const useGeometry of [true, false]) {
+    const plugin = new PluginClass();
+    const source = '# Before\n```mermaid\nA --> B\n```\n# After\n';
+    const from = source.indexOf('```mermaid');
+    const to = source.indexOf('# After');
+    const widget = { getBoundingClientRect: () => ({ top: 230, height: 300 }) };
+    const target = { closest: () => widget };
+    const editor = {
+      getValue: () => source,
+      cm: {
+        documentTop: 30,
+        ...(useGeometry ? { lineBlockAtHeight(height) {
+          assert.equal(height, 201);
+          return { from, to };
+        } } : {}),
+        posAtDOM: () => to,
+        posAtCoords: () => to,
+      },
+      offsetToPos: (offset) => ({ line: source.slice(0, offset).split('\n').length - 1 }),
+    };
+    plugin.app = { workspace: {
+      on(name, callback) { if (name === 'editor-menu') plugin.testEditorMenu = callback; }, onLayoutReady() {},
+      getLeavesOfType: () => [{ view: {
+        file: { extension: 'md' }, editor, getMode: () => 'source',
+        contentEl: { contains: () => true },
+      } }],
+    } };
+    plugin.registerView = () => {};
+    plugin.registerExtensions = () => {};
+    plugin.addCommand = () => {};
+    await plugin.onload();
+    let selected;
+    plugin.addBlockMenuItem = (_menu, _file, _source, block) => { selected = block.content; };
+    let stopped = false;
+    plugin.domEvents.contextmenu.callback({
+      target: {}, // The event is retargeted; the composed origin is inside the SVG.
+      composedPath: () => [{ closest: () => target }],
+      preventDefault() {}, stopImmediatePropagation() { stopped = true; },
+    });
+    plugin.testEditorMenu({}, editor, { file: { extension: 'md' } });
+    assert.equal(selected, 'A --> B\n');
+    assert.equal(stopped, false);
+  }
+});
+
+test('native editor menu uses the Obsidian widget range with the cursor on an unrelated heading', async () => {
+  for (const tileKey of ['cmTile', 'cmView']) {
+    const { PluginClass } = load();
+    const plugin = new PluginClass();
+    const source = '# Heading\n```mermaid\nA --> B\n```\n';
+    const widget = { [tileKey]: { widget: { lang: 'mermaid', start: source.indexOf('A --> B') } } };
+    const editor = {
+      getValue: () => source, getCursor: () => ({ line: 0 }),
+      offsetToPos: (offset) => ({ line: source.slice(0, offset).split('\n').length - 1 }),
+      cm: { posAtDOM() { assert.fail('must use the exact widget range'); } },
+    };
+    const file = { extension: 'md' };
+    const root = { contains: () => true };
+    let editorMenu;
+    plugin.app = { workspace: {
+      on(name, callback) { if (name === 'editor-menu') editorMenu = callback; },
+      onLayoutReady() {},
+      getLeavesOfType: () => [{ view: { file, editor, contentEl: root, getMode: () => 'source' } }],
+    } };
+    plugin.registerView = () => {};
+    plugin.registerExtensions = () => {};
+    plugin.addCommand = () => {};
+    await plugin.onload();
+    const target = { closest: () => widget };
+    plugin.domEvents.contextmenu.callback({ target: { closest: () => target } });
+    let title;
+    let click;
+    const item = {
+      setTitle(value) { title = value; return this; },
+      setIcon() { return this; },
+      onClick(callback) { click = callback; return this; },
+    };
+    editorMenu({ addItem(callback) { callback(item); } }, editor, { file });
+    assert.equal(title, 'New mermaid fomr block');
+    let moved;
+    plugin.moveMermaidBlock = (_file, _source, block) => { moved = block.content; };
+    click();
+    assert.equal(moved, 'A --> B\n');
+    assert.equal(plugin.previewContext, null);
+  }
+});
+
+test('toolbar filename renames the file in place through the file manager and preserves .mmd', async () => {
+  const view = await openView();
+  view.file = { basename: 'Old', name: 'Old.mmd', parent: { path: 'diagrams' } };
+  view.syncFilename();
+  assert.equal(view.filename.value, 'Old');
+  let saved = false;
+  view.save = async () => { saved = true; };
+  view.app.vault = { getAbstractFileByPath: () => null };
+  view.app.fileManager = { async renameFile(file, path) {
+    assert.equal(saved, true);
+    assert.equal(path, 'diagrams/New.mmd');
+    file.basename = 'New'; file.name = 'New.mmd';
+  } };
+  view.filename.value = 'New.mmd';
+  await view.renameFromTitle();
+  assert.equal(view.filename.value, 'New');
+  assert.equal(view.filename.readOnly, false);
+});
+
+test('filename collisions and invalid names restore the original title without renaming', async () => {
+  const runtime = load('en');
+  const view = await openView(runtime);
+  view.file = { basename: 'Old', name: 'Old.mmd', parent: { path: '/' } };
+  view.app.vault = { getAbstractFileByPath: () => ({ path: 'Taken.mmd' }) };
+  view.app.fileManager = { renameFile() { assert.fail('must not rename'); } };
+  for (const name of ['Taken', '', '../Other']) {
+    view.filename.value = name;
+    await view.renameFromTitle();
+    assert.equal(view.filename.value, 'Old');
+  }
+  assert.equal(runtime.notices.length, 3);
+  assert.match(runtime.notices[0], /already exists/);
+});
+
+test('Escape cancels filename edits, Enter blurs, and IME confirmation is ignored', async () => {
+  const view = await openView();
+  view.file = { basename: 'Old', name: 'Old.mmd' };
+  let blurs = 0;
+  view.filename.blur = () => { blurs++; };
+  view.filename.value = 'Changed';
+  const keydown = view.filename.handlers.keydown.callback;
+  keydown({ key: 'Escape', preventDefault() {} });
+  assert.equal(view.filename.value, 'Old');
+  assert.equal(blurs, 1);
+  keydown({ key: 'Enter', isComposing: true });
+  assert.equal(blurs, 1);
+  keydown({ key: 'Enter', preventDefault() {} });
+  assert.equal(blurs, 2);
 });

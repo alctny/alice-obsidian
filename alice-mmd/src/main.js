@@ -1,9 +1,10 @@
-import { Plugin, TextFileView, TFolder, Notice, parseYaml, normalizePath, getLanguage, addIcon, setIcon } from 'obsidian';
+import { Plugin, TextFileView, TFolder, Menu, MarkdownRenderChild, Notice, parseYaml, normalizePath, getLanguage, addIcon, setIcon } from 'obsidian';
 import mermaid from 'mermaid';
 import elkLayouts from '@mermaid-js/layout-elk';
 import { createRenderer } from './renderer.js';
 import { translate } from './i18n.js';
 import { MermaidOutline, sourcePosition } from './outline.js';
+import { mermaidBlockAt } from './blocks.js';
 
 const VIEW_TYPE = 'alice-mmd';
 const MERMAID_ICON = 'alice-mmd-mermaid';
@@ -35,12 +36,33 @@ class MermaidView extends TextFileView {
   async onOpen() {
     this.contentEl.addClass('alice-mmd-view');
     const toolbar = this.contentEl.createDiv({ cls: 'alice-mmd-toolbar' });
-    this.toggle = toolbar.createEl('button', { cls: 'alice-mmd-mode' });
+    this.filename = toolbar.createEl('input', {
+      cls: 'alice-mmd-filename',
+      attr: { type: 'text', 'aria-label': t('filename'), placeholder: t('filename'), spellcheck: 'false' },
+    });
+    this.syncFilename();
+    this.filename.addEventListener('blur', () => this.renameFromTitle());
+    this.filename.addEventListener('keydown', (event) => {
+      if (event.isComposing) return;
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        this.filename.blur();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        this.syncFilename();
+        this.filename.blur();
+      }
+    });
+    if (this.app.vault?.on) this.registerEvent(this.app.vault.on('rename', (file) => {
+      if (file === this.file) this.syncFilename();
+    }));
+    const controls = this.contentEl.createDiv({ cls: 'alice-mmd-toolbar alice-mmd-controls' });
+    this.toggle = controls.createEl('button', { cls: 'alice-mmd-mode' });
     this.modeIcon = this.toggle.createSpan({ attr: { 'aria-hidden': 'true' } });
     this.modeLabel = this.toggle.createSpan();
     this.updateModeButton();
     this.toggle.addEventListener('click', () => this.setEditing(!this.editing));
-    this.zoomControls = toolbar.createDiv({ cls: 'alice-mmd-zoom-controls' });
+    this.zoomControls = controls.createDiv({ cls: 'alice-mmd-zoom-controls' });
     const zoomOut = this.zoomControls.createEl('button', { text: '−', attr: { 'aria-label': t('zoomOut'), title: t('zoomOut') } });
     zoomOut.addEventListener('click', () => this.setZoom(this.zoom / 1.2));
     this.zoomReset = this.zoomControls.createEl('button', { text: '100%', attr: { 'aria-label': t('resetZoom'), title: t('resetZoom') } });
@@ -273,9 +295,43 @@ class MermaidView extends TextFileView {
 
   setViewData(data, clear) {
     this.data = data;
+    this.syncFilename();
     if (this.editor) {
       if (clear || this.editor.value !== data) this.editor.value = data;
       this.scheduleRender();
+    }
+  }
+
+  syncFilename() {
+    if (!this.filename) return;
+    this.filename.value = this.file?.basename ?? '';
+    this.filename.title = this.file?.name ?? '';
+  }
+
+  async renameFromTitle() {
+    const file = this.file;
+    if (!file || this.renaming) return;
+    const name = this.filename.value.trim().replace(/\.mmd$/i, '');
+    if (name === file.basename) { this.syncFilename(); return; }
+    if (!name || /[\\/:*?"<>|\x00-\x1f]/.test(name) || name === '.' || name === '..') {
+      new Notice(t('invalidFilename'));
+      this.syncFilename();
+      return;
+    }
+    this.renaming = true;
+    this.filename.readOnly = true;
+    try {
+      const path = normalizePath(`${file.parent?.path && file.parent.path !== '/' ? `${file.parent.path}/` : ''}${name}.mmd`);
+      const existing = this.app.vault.getAbstractFileByPath(path);
+      if (existing && existing !== file) throw new Error(`${t('blockFileExists')}${path}`);
+      await this.save();
+      await this.app.fileManager.renameFile(file, path);
+    } catch (error) {
+      new Notice(`${t('renameError')}${error.message ?? error}`);
+    } finally {
+      this.renaming = false;
+      this.filename.readOnly = false;
+      this.syncFilename();
     }
   }
 
@@ -432,6 +488,133 @@ export default class AliceMmdPlugin extends Plugin {
         .setIcon(MERMAID_ICON)
         .onClick(() => this.createMmd(folder)));
     }));
+    this.registerEvent(this.app.workspace.on('editor-menu', (menu, editor, view) => {
+      if (view.file?.extension !== 'md') return;
+      const source = editor.getValue();
+      const clicked = this.previewContext;
+      const block = clicked?.editor === editor && clicked.source === source
+        ? clicked.block : mermaidBlockAt(source, editor.getCursor().line);
+      this.previewContext = null;
+      if (block) this.addBlockMenuItem(menu, view.file, source, block, editor);
+    }));
+    const previewContextMenu = (event) => {
+      this.previewContext = null;
+      const origin = event.composedPath?.()[0] ?? event.target;
+      const target = origin.closest?.('.cm-lang-mermaid, .block-language-mermaid, .mermaid, svg[id^="mermaid"]');
+      if (!target) return;
+      const view = this.app.workspace.getLeavesOfType('markdown')
+        .map((leaf) => leaf.view).find((view) => view.contentEl.contains(target));
+      if (view?.file?.extension !== 'md') return;
+      if (view.getMode?.() === 'preview') return; // Handled by the reading-mode processor.
+      const editor = view.editor;
+      const cm = editor.cm;
+      if (!cm) return;
+      const source = editor.getValue();
+      const widget = target.closest('.cm-embed-block') ?? target;
+      const offsets = [];
+      // Obsidian's rendered code widget stores its source range. CM uses
+      // cmTile in current releases and cmView in earlier releases.
+      const tile = widget.cmTile ?? widget.cmView;
+      const codeWidget = tile?.widget;
+      if (codeWidget?.lang === 'mermaid' && codeWidget.start >= 0) offsets.push(codeWidget.start);
+      if (tile?.posAtStart != null) offsets.push(tile.posAtStart);
+      // posAtDOM on a replacement widget can point AFTER its closing fence.
+      // Its visual block range retains the actual hidden source range.
+      if (!offsets.length && cm.lineBlockAtHeight && widget.getBoundingClientRect) {
+        const bounds = widget.getBoundingClientRect();
+        const range = cm.lineBlockAtHeight(bounds.top + Math.min(1, bounds.height / 2) - cm.documentTop);
+        offsets.push(range.from, Math.max(range.from, range.to - 1));
+      }
+      if (!offsets.length) {
+        try { offsets.push(cm.posAtDOM(widget)); } catch { /* Replacement widget has no DOM source position. */ }
+        if (cm.posAtCoords) offsets.push(cm.posAtCoords({ x: event.clientX, y: event.clientY }));
+      }
+      let block;
+      for (const offset of offsets) {
+        if (offset == null) continue;
+        block = mermaidBlockAt(source, editor.offsetToPos(offset).line);
+        if (!block && offset > 0) block = mermaidBlockAt(source, editor.offsetToPos(offset - 1).line);
+        if (block) break;
+      }
+      if (!block) return;
+      // Obsidian builds the native menu after this capture listener. Add our
+      // action there instead of opening a competing menu that it can replace.
+      this.previewContext = { editor, source, block };
+    };
+    const previewRoots = new WeakSet();
+    const attachPreviewMenus = () => {
+      for (const leaf of this.app.workspace.getLeavesOfType('markdown')) {
+        const root = leaf.view.contentEl;
+        if (!root || previewRoots.has(root)) continue;
+        previewRoots.add(root);
+        this.registerDomEvent(root, 'contextmenu', previewContextMenu, true);
+      }
+    };
+    this.app.workspace.onLayoutReady(attachPreviewMenus);
+    this.registerEvent(this.app.workspace.on('layout-change', attachPreviewMenus));
+    this.registerEvent(this.app.workspace.on('active-leaf-change', attachPreviewMenus));
+    attachPreviewMenus();
+    this.registerMarkdownPostProcessor((element, context) => {
+      const child = new MarkdownRenderChild(element);
+      context.addChild(child);
+      child.registerDomEvent(element, 'contextmenu', (event) => {
+        const target = event.target.closest?.('.mermaid, pre:has(code.language-mermaid)');
+        if (!target || !element.contains(target)) return;
+        const section = context.getSectionInfo(target);
+        const file = this.app.vault.getAbstractFileByPath(context.sourcePath);
+        if (!section || file?.extension !== 'md') return;
+        // Section info supplies the document text and the block's source line.
+        const block = mermaidBlockAt(section.text, section.lineStart);
+        if (!block) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const menu = new Menu();
+        this.addBlockMenuItem(menu, file, section.text, block);
+        menu.showAtMouseEvent(event);
+      }, true);
+    });
+  }
+
+  addBlockMenuItem(menu, file, source, block, editor) {
+    menu.addItem((item) => item
+      .setTitle('New mermaid fomr block')
+      .setIcon(MERMAID_ICON)
+      .onClick(() => this.moveMermaidBlock(file, source, block, editor)));
+  }
+
+  async moveMermaidBlock(file, source, block, editor) {
+    try {
+      const base = normalizePath(`${file.parent?.path && file.parent.path !== '/' ? `${file.parent.path}/` : ''}${file.basename}`);
+      let path = `${base}.mmd`;
+      while (this.app.vault.getAbstractFileByPath(path)) {
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const suffix = Array.from({ length: 13 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+        path = `${base}-${suffix}.mmd`;
+      }
+      const current = editor ? editor.getValue() : await this.app.vault.read(file);
+      if (current !== source) throw new Error(t('blockSourceChanged'));
+      const diskSource = editor ? await this.app.vault.read(file) : current;
+      const created = await this.app.vault.create(path, block.content);
+      try {
+        // Write through the vault first: an EACCES must not remove the editor's block.
+        await this.app.vault.process(file, (data) => {
+          if (data !== diskSource || (editor && editor.getValue() !== source)) {
+            throw new Error(t('blockSourceChanged'));
+          }
+          return source.slice(0, block.start) + source.slice(block.end);
+        });
+      } catch (error) {
+        new Notice(`${t('blockMoveError')}${path}\n${error.message ?? error}`);
+        await this.app.workspace.getLeaf('tab').openFile(created);
+        return;
+      }
+      if (editor && editor.getValue() === source) {
+        editor.replaceRange('', editor.offsetToPos(block.start), editor.offsetToPos(block.end));
+      }
+      await this.app.workspace.getLeaf('tab').openFile(created);
+    } catch (error) {
+      new Notice(`${t('createError')}${error.message ?? error}`);
+    }
   }
 
   onunload() {

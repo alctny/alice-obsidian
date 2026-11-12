@@ -1,7 +1,26 @@
-.alice-mmd-view { display: flex; flex-direction: column; gap: 12px; padding: 16px; overflow: auto; }
-.alice-mmd-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+/* Override Obsidian's .workspace-leaf-content .view-content padding and height. */
+.workspace-leaf-content > .view-content.alice-mmd-view {
+  position: relative; display: flex; flex-direction: column; flex: 1 1 0;
+  height: auto; min-height: 0; gap: 12px; padding: 16px 16px 0; overflow: hidden;
+}
+.alice-mmd-toolbar { display: flex; flex: 0 0 auto; flex-wrap: wrap; align-items: center; gap: 8px; }
+.alice-mmd-controls {
+  position: absolute; left: 16px; bottom: 16px; z-index: 3;
+  max-width: calc(100% - 32px); justify-content: flex-start; pointer-events: none;
+}
+.alice-mmd-controls button { pointer-events: auto; }
+.alice-mmd-view .alice-mmd-filename {
+  flex: 1 1 100%; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box;
+  color: var(--h1-color, var(--text-normal));
+  font-family: var(--h1-font, var(--font-text)); font-size: var(--h1-size, 2em);
+  font-weight: var(--h1-weight, 700); font-style: var(--h1-style, normal);
+  font-variant: var(--h1-variant, normal); letter-spacing: var(--h1-letter-spacing, normal);
+  line-height: var(--h1-line-height, 1.2); height: auto; padding: 4px 8px;
+  background: transparent; border: 0; box-shadow: none; text-overflow: ellipsis;
+}
+.alice-mmd-view .alice-mmd-filename:focus { box-shadow: none; outline: none; background: var(--background-modifier-hover); }
 .alice-mmd-source { width: 100%; min-height: 240px; flex: 0 0 35%; resize: vertical; font-family: var(--font-monospace); white-space: pre; tab-size: 2; }
-.alice-mmd-canvas { position: relative; flex: 1; min-height: 160px; }
+.alice-mmd-canvas { position: relative; flex: 1 1 0; min-height: 0; }
 .alice-mmd-preview { position: absolute; inset: 0; touch-action: none; cursor: grab; overflow: auto; overscroll-behavior: contain; overflow-anchor: none; }
 .alice-mmd-diagram { flex: none; }
 .alice-mmd-staging { position: absolute; left: 0; top: 0; width: 100%; visibility: hidden; pointer-events: none; }
@@ -19,9 +38,20 @@
 .alice-mmd-view.is-editing .alice-mmd-source { flex: 1 1 0; min-height: 0; min-width: 0; resize: none; }
 
 .alice-mmd-mode { display: inline-flex; align-items: center; gap: 6px; }
+.alice-mmd-view .alice-mmd-toolbar button,
+.alice-mmd-view .alice-mmd-toolbar button:hover,
+.alice-mmd-view .alice-mmd-toolbar button:focus,
+.alice-mmd-view .alice-mmd-toolbar button:active {
+  background: transparent; box-shadow: none;
+  border: 1px solid var(--background-modifier-border);
+}
+.alice-mmd-view .alice-mmd-toolbar button:hover {
+  border-color: var(--background-modifier-border-hover, var(--text-muted));
+}
 .alice-mmd-mode svg { width: var(--icon-s); height: var(--icon-s); }
-.alice-mmd-view.is-editing { padding: 0; gap: 0; overflow: hidden; }
+.workspace-leaf-content > .view-content.alice-mmd-view.is-editing { padding: 0; gap: 0; overflow: hidden; }
 .alice-mmd-view.is-editing .alice-mmd-toolbar { padding: 12px 16px 0; }
+.alice-mmd-view.is-editing .alice-mmd-controls { padding: 0; }
 .alice-mmd-view .alice-mmd-source,
 .alice-mmd-view .alice-mmd-source:focus,
 .alice-mmd-view .alice-mmd-source:focus-visible {

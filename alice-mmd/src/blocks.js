@@ -1,0 +1,28 @@
+// Skip other fenced blocks so Mermaid examples inside them are never extracted.
+export function mermaidBlockAt(source, line) {
+  const lines = source.split('\n');
+  let fence = null;
+  let offset = 0;
+  for (let index = 0; index < lines.length; index++) {
+    const text = lines[index].replace(/\r$/, '');
+    if (!fence) {
+      const match = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(text);
+      if (match) fence = {
+        marker: match[1][0], size: match[1].length, line: index, start: offset,
+        contentStart: offset + lines[index].length + 1,
+        mermaid: match[2].trim().toLowerCase() === 'mermaid',
+      };
+    } else if (new RegExp(`^ {0,3}${fence.marker}{${fence.size},}\\s*$`).test(text)) {
+      if (fence.mermaid && line >= fence.line && line <= index) {
+        return {
+          start: fence.start,
+          end: offset + lines[index].length + (index < lines.length - 1 ? 1 : 0),
+          content: source.slice(fence.contentStart, offset),
+        };
+      }
+      fence = null;
+    }
+    offset += lines[index].length + 1;
+  }
+  return null;
+}
