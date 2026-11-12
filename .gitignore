@@ -2,3 +2,5 @@ dev.config.json
 /theme.css
 
 /dist/
+
+node_modules/

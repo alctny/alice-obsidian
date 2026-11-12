@@ -333,7 +333,7 @@
 }
 
 .theme-dark :is(.markdown-rendered :is(h1, h2, h3, h4, h5, h6), .is-live-preview .cm-line.HyperMD-header,
-  [data-type="outline"] .tree-item-inner[data-alice-heading-level])::after {
+  [data-type="outline"] .tree-item-inner[data-alice-heading-level]):not(.tasks-group-heading)::after {
   content: "";
   display: inline-block;
   width: 0.85em;
@@ -343,6 +343,25 @@
   background: var(--alice-heading-icon-background, var(--alice-heading-icon-color));
   mask: var(--alice-heading-icon-mask, var(--alice-heading-icon) center / contain no-repeat);
   pointer-events: none;
+}
+
+/* Hide Obsidian's hover frame only around rendered Tasks queries. */
+.theme-dark .markdown-source-view.mod-cm6 .cm-embed-block:is(.block-language-tasks, :has(.block-language-tasks)) {
+  --embed-block-shadow-hover: none;
+}
+
+/* Tasks renders group labels inside h4; keep only the label's own height. */
+.theme-dark .markdown-rendered h4.tasks-group-heading {
+  margin-block: 0;
+  padding-block: 0;
+}
+
+.theme-dark .markdown-rendered h4.tasks-group-heading > p {
+  margin-block: 0;
+}
+
+.theme-dark .markdown-rendered h4.tasks-group-heading + ul.plugin-tasks-query-result {
+  margin-block-start: 6px;
 }
 
 .theme-dark .markdown-rendered pre,
