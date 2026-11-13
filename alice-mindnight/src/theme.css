@@ -693,6 +693,17 @@
   color: var(--alice-gold);
 }
 
+/* Sidebar tab buttons indicate selection through foreground color only. */
+.theme-dark .mod-sidedock .workspace-tab-header-container .workspace-tab-header:is(.is-active, .has-active-menu),
+.theme-dark .mod-sidedock .workspace-tab-header-container .workspace-tab-header:is(.is-active, .has-active-menu):hover {
+  background-color: transparent;
+  color: var(--alice-gold);
+}
+
+.theme-dark .mod-sidedock .workspace-tab-header-container .workspace-tab-header:is(.is-active, .has-active-menu) .workspace-tab-header-inner {
+  background-color: transparent;
+}
+
 /* Theme updates also recolor sidebar rows when an older plugin CSS is loaded. */
 .theme-dark .alice-sidebar .alice-sidebar-row.is-active {
   background: var(--alice-active-background);
