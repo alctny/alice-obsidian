@@ -1,9 +1,11 @@
 const { Plugin, Notice } = require('obsidian');
 const { TYPE } = require('./constants.cjs');
 const { OpenFilesView } = require('./view.cjs');
+const { redirectSidebarPin } = require('./pin-command.cjs');
 
 module.exports = class AliceOpenFiles extends Plugin {
   async onload() {
+    redirectSidebarPin(this);
     this.registerView(TYPE, leaf => new OpenFilesView(leaf));
     this.addCommand({ id: 'show-open-files', name: '顯示開啟文件', callback: () => this.showPanel() });
     this.addCommand({
