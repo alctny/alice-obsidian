@@ -17,6 +17,7 @@ function setup({ outlineEnabled = true } = {}) {
       if (id === './constants.cjs') return { TYPE: 'alice-sidebar' };
       if (id === './view.cjs') return { OpenFilesView: class {} };
       if (id === './pin-command.cjs') return { redirectSidebarPin() {} };
+      if (id === './open-file.cjs') return { reuseOpenFiles() {} };
       throw new Error(`Unexpected module: ${id}`);
     },
   });

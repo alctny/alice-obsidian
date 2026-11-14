@@ -2,6 +2,7 @@ const { Plugin, Notice } = require('obsidian');
 const { TYPE } = require('./constants.cjs');
 const { OpenFilesView } = require('./view.cjs');
 const { redirectSidebarPin } = require('./pin-command.cjs');
+const { reuseOpenFiles } = require('./open-file.cjs');
 
 module.exports = class AliceOpenFiles extends Plugin {
   async onload() {
@@ -15,7 +16,10 @@ module.exports = class AliceOpenFiles extends Plugin {
       callback: () => this.togglePanel(),
     });
     this.addRibbonIcon('book-open', '開啟文件', () => this.showPanel());
-    this.app.workspace.onLayoutReady(() => this.showPanel());
+    this.app.workspace.onLayoutReady(() => {
+      reuseOpenFiles(this);
+      return this.showPanel();
+    });
   }
   async togglePanel() {
     const workspace = this.app.workspace;
