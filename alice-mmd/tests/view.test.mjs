@@ -7,6 +7,16 @@ import { MermaidOutline, sourcePosition } from '../src/outline.js';
 import { mermaidBlockAt } from '../src/blocks.js';
 
 const main = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
+function sourceEditor(parent, source = '', label, onChange) {
+  return {
+    state: { doc: { toString: () => source } },
+    setValue(value) { source = value; },
+    input(value) { source = value; onChange(value); },
+    focus() { parent.focused = true; }, requestMeasure() {},
+    destroy() { this.destroyed = true; },
+    label,
+  };
+}
 function load(language = 'zh-TW', exportImage) {
   const timers = new Map();
   const notices = [];
@@ -15,6 +25,9 @@ function load(language = 'zh-TW', exportImage) {
   const modals = [];
   let nextTimer = 0;
   const context = vm.createContext({
+    createSourceEditor: sourceEditor,
+    replaceSource: (editor, source) => editor.setValue(source),
+    mermaidHighlightExtension: markdown => ({ highlight: markdown }),
     MermaidOutline, sourcePosition, mermaidBlockAt, addIcon() {}, setIcon(element, icon) { element.icon = icon; },
     translate, getLanguage: () => language,
     document: {}, Menu: class {
@@ -53,7 +66,10 @@ function load(language = 'zh-TW', exportImage) {
       registerMarkdownCodeBlockProcessor(language, callback, sortOrder) {
         this.codeProcessor = { language, callback, sortOrder };
       }
-      registerEditorExtension(extension) { this.editorExtension = extension; }
+      registerEditorExtension(extension) {
+        (this.editorExtensions ??= []).push(extension);
+        this.editorExtension = extension;
+      }
       registerMarkdownPostProcessor(callback) { this.postProcessor = callback; }
       registerDomEvent(_element, type, callback, capture) {
         this.domEvents ??= {};
@@ -104,10 +120,11 @@ test('file data replacement updates source and supersedes pending renders', () =
   const { View, timers } = load();
   const view = new View();
   view.editor = { value: '' };
+  view.sourceEditor = sourceEditor(view.editor);
   view.setViewData('first', true);
   view.setViewData('second', false);
   assert.equal(view.getViewData(), 'second');
-  assert.equal(view.editor.value, 'second');
+  assert.equal(view.sourceEditor.state.doc.toString(), 'second');
   assert.equal(timers.size, 1);
   assert.equal(view.revision, 2);
 });
@@ -116,13 +133,14 @@ test('clearing a file cancels rendering and clears both panes', () => {
   const { View, timers } = load();
   const view = new View();
   view.editor = { value: 'old' };
+  view.sourceEditor = sourceEditor(view.editor, 'old');
   let cleared = false;
   view.preview = { replaceChildren() { cleared = true; } };
   view.errorEl = { hidden: false };
   view.setViewData('old', true);
   view.clear();
   assert.equal(view.getViewData(), '');
-  assert.equal(view.editor.value, '');
+  assert.equal(view.sourceEditor.state.doc.toString(), '');
   assert.equal(view.errorEl.hidden, true);
   assert.equal(cleared, true);
   assert.equal(timers.size, 0);
@@ -172,6 +190,7 @@ test('registers a dedicated .mmd view and a create-file command', async () => {
   plugin.settings.markdownMaxHeight = 400;
   assert.equal(child.args[5](), 400);
   assert.equal(plugin.editorExtension.livePreview, true);
+  assert.equal(plugin.editorExtensions[0].highlight, true);
   assert.ok(factory({}) instanceof View);
   assert.deepEqual(commands, ['reset-zoom', 'create-mmd']);
 });
@@ -479,10 +498,9 @@ test('editing cancels pending preview work and renders latest source when return
   view.errorEl.textContent = 'previous error';
   view.errorEl.hidden = false;
   view.setEditing(true);
-  view.editor.value = 'flowchart TD\n A-->C';
   let saved = false;
   view.requestSave = () => { saved = true; };
-  view.editor.handlers.input.callback();
+  view.sourceEditor.input('flowchart TD\n A-->C');
   assert.equal(saved, true);
   assert.equal(view.getViewData(), 'flowchart TD\n A-->C');
   assert.equal(view.errorEl.hidden, true);
@@ -494,6 +512,20 @@ test('editing cancels pending preview work and renders latest source when return
   assert.equal(view.zoomControls.hidden, false);
   assert.equal(view.errorEl.hidden, true);
   assert.ok(view.timer);
+});
+
+test('file switching resets the source editor and closing destroys it', async () => {
+  const view = await openView();
+  const original = view.sourceEditor;
+  view.setViewData('flowchart LR\nA-->B', true);
+  assert.equal(original.destroyed, true);
+  assert.notEqual(view.sourceEditor, original);
+  assert.equal(view.sourceEditor.state.doc.toString(), view.getViewData());
+  const current = view.sourceEditor;
+  view.setViewData('flowchart LR\nA-->C', false);
+  assert.equal(view.sourceEditor, current);
+  await view.onClose();
+  assert.equal(current.destroyed, true);
 });
 
 
@@ -623,7 +655,7 @@ test('English UI localizes buttons, accessibility labels, commands, context menu
   const runtime = load('en');
   const view = await openView(runtime);
   assert.equal(view.toggle.attributes['aria-pressed'], 'false');
-  assert.equal(view.editor.attributes['aria-label'], 'Mermaid source');
+  assert.equal(view.sourceEditor.label, 'Mermaid source');
   assert.equal(view.miniMap.attributes['aria-label'], 'Diagram minimap');
   assert.equal(view.zoomReset.attributes['aria-label'], 'Reset zoom to 100%');
   view.setEditing(true);

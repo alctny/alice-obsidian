@@ -7,6 +7,7 @@ import { MermaidOutline, sourcePosition } from './outline.js';
 import { mermaidBlockAt } from './blocks.js';
 import { MermaidBlock, livePreviewExtension } from './markdown.js';
 import { exportPng } from './export.js';
+import { createSourceEditor, mermaidHighlightExtension, replaceSource } from './editor.js';
 
 const VIEW_TYPE = 'alice-mmd';
 const MERMAID_ICON = 'alice-mmd-mermaid';
@@ -150,17 +151,9 @@ class MermaidView extends TextFileView {
     const zoomIn = this.zoomControls.createEl('button', { text: '+', attr: { 'aria-label': t('zoomIn'), title: t('zoomIn') } });
     zoomIn.addEventListener('click', () => this.setZoom(this.zoom * 1.2));
     this.toggle.setAttribute('aria-expanded', 'false');
-    this.editor = this.contentEl.createEl('textarea', {
-      cls: 'alice-mmd-source',
-      attr: { 'aria-label': t('source'), spellcheck: 'false' },
-    });
+    this.editor = this.contentEl.createDiv({ cls: 'alice-mmd-source' });
     this.editor.hidden = true;
-    this.editor.value = this.data;
-    this.editor.addEventListener('input', () => {
-      this.data = this.editor.value;
-      this.requestSave();
-      this.scheduleRender();
-    });
+    this.initSourceEditor();
     this.errorEl = this.contentEl.createEl('pre', { cls: 'alice-mmd-error' });
     this.errorEl.hidden = true;
     const canvas = this.canvas = this.contentEl.createDiv({ cls: 'alice-mmd-canvas' });
@@ -365,7 +358,10 @@ class MermaidView extends TextFileView {
     else this.contentEl.removeClass('is-editing');
     this.updateModeButton();
     this.scheduleRender();
-    if (editing) this.editor.focus();
+    if (editing) {
+      this.sourceEditor.requestMeasure();
+      this.sourceEditor.focus();
+    }
   }
 
   showControls() {
@@ -396,11 +392,21 @@ class MermaidView extends TextFileView {
     this.updateMiniMap();
   }
 
+  initSourceEditor() {
+    this.sourceEditor?.destroy();
+    this.sourceEditor = createSourceEditor(this.editor, this.data, t('source'), source => {
+      this.data = source;
+      this.requestSave();
+      this.scheduleRender();
+    });
+  }
+
   setViewData(data, clear) {
     this.data = data;
     this.syncFilename();
     if (this.editor) {
-      if (clear || this.editor.value !== data) this.editor.value = data;
+      if (clear) this.initSourceEditor();
+      else replaceSource(this.sourceEditor, data);
       this.scheduleRender();
     }
   }
@@ -444,7 +450,7 @@ class MermaidView extends TextFileView {
     this.onOutlineChange?.();
     this.revision++;
     clearTimeout(this.timer);
-    if (this.editor) this.editor.value = '';
+    if (this.sourceEditor) replaceSource(this.sourceEditor, '');
     this.diagramEl = null;
     this.diagramSize = null;
     this.setZoom(1);
@@ -522,11 +528,12 @@ class MermaidView extends TextFileView {
   revealObject(object) {
     this.app.workspace.setActiveLeaf(this.leaf, { focus: true });
     if (this.editing) {
-      this.editor.focus();
       const position = sourcePosition(this.data, object.id);
-      this.editor.setSelectionRange(position.start.offset, position.end.offset);
-      const lineHeight = parseFloat(this.contentEl.ownerDocument.defaultView.getComputedStyle(this.editor).lineHeight) || 24;
-      this.editor.scrollTop = Math.max(0, position.start.line * lineHeight - this.editor.clientHeight / 2);
+      this.sourceEditor.dispatch({
+        selection: { anchor: position.start.offset, head: position.end.offset },
+        scrollIntoView: true,
+      });
+      this.sourceEditor.focus();
       return;
     }
     const candidates = this.diagramEl?.querySelectorAll('[id], g[data-id], rect[name]') ?? [];
@@ -545,6 +552,7 @@ class MermaidView extends TextFileView {
 
   async onClose() {
     this.closed = true;
+    this.sourceEditor?.destroy();
     clearTimeout(this.controlsTimer);
     clearTimeout(this.miniMapTimer);
     this.resizeObserver?.disconnect();
@@ -564,6 +572,7 @@ export default class AliceMmdPlugin extends Plugin {
       context.addChild(new MermaidBlock(element, source, render, this.app.workspace,
         undefined, () => this.settings.markdownMaxHeight));
     }, -100);
+    this.registerEditorExtension(mermaidHighlightExtension(true));
     this.registerEditorExtension(livePreviewExtension(this, render, (event, cm, from) => {
       const view = this.app.workspace.getLeavesOfType('markdown')
         .map(leaf => leaf.view).find(view => view.editor?.cm === cm);
