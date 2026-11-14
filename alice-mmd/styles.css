@@ -27,6 +27,8 @@
 .alice-mmd-diagram { flex: none; }
 .alice-mmd-staging { position: absolute; left: 0; top: 0; width: 100%; visibility: hidden; pointer-events: none; }
 .alice-mmd-error { white-space: pre-wrap; color: var(--text-error); user-select: text; }
+.alice-mmd-block { position: relative; min-height: 32px; overflow-x: auto; }
+.alice-mmd-block > div > svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
 .alice-mmd-view [hidden] { display: none; }
 
 .alice-mmd-preview.is-panning { cursor: grabbing; }

@@ -11,7 +11,7 @@ await build({
   format: 'cjs',
   platform: 'browser',
   target: 'es2022',
-  external: ['obsidian'],
+  external: ['obsidian', '@codemirror/state', '@codemirror/view'],
   minify: true,
   legalComments: 'eof',
   footer: { js: 'module.exports = module.exports.default;' },

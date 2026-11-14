@@ -196,7 +196,7 @@ npm run build
 
 ## Mermaid 文件插件
 
-[alice-mmd](alice-mmd/README.md) 提供 `.mmd` 文件的圖表檢視與原始碼編輯，支援 Mermaid YAML frontmatter `config`，內建 ELK。
+[alice-mmd](alice-mmd/README.md) 提供 `.mmd` 文件的圖表檢視與原始碼編輯，並接管 `.md` 文件中 Mermaid 區塊的閱讀模式與 Live Preview 渲染，支援 Mermaid YAML frontmatter `config`，內建 ELK。
 
 首次建置先執行 `npm --prefix alice-mmd install`；之後 `npm run build` 或 `./build.sh` 會同時產生主題、側欄及 Mermaid 插件。單獨建置可使用 `npm run build:mmd`。`./install.sh /absolute/path/to/vault` 也會安裝 `alice-mmd`。
 

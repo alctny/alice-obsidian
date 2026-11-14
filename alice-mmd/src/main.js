@@ -5,6 +5,7 @@ import { createRenderer } from './renderer.js';
 import { translate } from './i18n.js';
 import { MermaidOutline, sourcePosition } from './outline.js';
 import { mermaidBlockAt } from './blocks.js';
+import { MermaidBlock, livePreviewExtension } from './markdown.js';
 
 const VIEW_TYPE = 'alice-mmd';
 const MERMAID_ICON = 'alice-mmd-mermaid';
@@ -475,6 +476,23 @@ class MermaidView extends TextFileView {
 export default class AliceMmdPlugin extends Plugin {
   async onload() {
     addIcon(MERMAID_ICON, MERMAID_SVG);
+    // Run before the built-in reading-mode processor consumes code.language-mermaid.
+    this.registerMarkdownCodeBlockProcessor('mermaid', (source, element, context) => {
+      context.addChild(new MermaidBlock(element, source, render, this.app.workspace));
+    }, -100);
+    this.registerEditorExtension(livePreviewExtension(this, render, (event, cm, from) => {
+      const view = this.app.workspace.getLeavesOfType('markdown')
+        .map(leaf => leaf.view).find(view => view.editor?.cm === cm);
+      if (!view?.file) return;
+      const source = view.editor.getValue();
+      const block = mermaidBlockAt(source, view.editor.offsetToPos(from).line);
+      if (!block) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const menu = new Menu();
+      this.addBlockMenuItem(menu, view.file, source, block, view.editor);
+      menu.showAtMouseEvent(event);
+    }));
     this.outline = new MermaidOutline(this.app, VIEW_TYPE);
     this.registerView(VIEW_TYPE, (leaf) => {
       const view = new MermaidView(leaf);
@@ -524,6 +542,7 @@ export default class AliceMmdPlugin extends Plugin {
       const origin = event.composedPath?.()[0] ?? event.target;
       const target = origin.closest?.('.cm-lang-mermaid, .block-language-mermaid, .mermaid, svg[id^="mermaid"]');
       if (!target) return;
+      if (target.classList?.contains('alice-mmd-block')) return;
       const view = this.app.workspace.getLeavesOfType('markdown')
         .map((leaf) => leaf.view).find((view) => view.contentEl.contains(target));
       if (view?.file?.extension !== 'md') return;
@@ -580,7 +599,7 @@ export default class AliceMmdPlugin extends Plugin {
       const child = new MarkdownRenderChild(element);
       context.addChild(child);
       child.registerDomEvent(element, 'contextmenu', (event) => {
-        const target = event.target.closest?.('.mermaid, pre:has(code.language-mermaid)');
+        const target = event.target.closest?.('.alice-mmd-block, .mermaid, pre:has(code.language-mermaid)');
         if (!target || !element.contains(target)) return;
         const section = context.getSectionInfo(target);
         const file = this.app.vault.getAbstractFileByPath(context.sourcePath);

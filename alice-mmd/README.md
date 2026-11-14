@@ -1,6 +1,6 @@
 # alice-mmd
 
-Obsidian 的獨立 Mermaid 文件插件。開啟 `.mmd` 文件即可查看圖表，點擊「Source」可編輯內容，變更後自動儲存，再次點擊模式按鈕返回預覽後渲染最新內容。外部程式修改文件時，由 Obsidian 的 TextFileView 重新載入內容。
+Obsidian 的 Mermaid 文件與 Markdown 區塊渲染插件。開啟 `.mmd` 文件即可查看圖表，點擊「Source」可編輯內容，變更後自動儲存，再次點擊模式按鈕返回預覽後渲染最新內容。外部程式修改文件時，由 Obsidian 的 TextFileView 重新載入內容。
 
 ## 安裝與建置
 
@@ -20,6 +20,8 @@ Mermaid 與 ELK 會打包到插件，使用時不依賴 CDN 或網路。建置�
 在檔案總管右鍵點擊資料夾，選擇 **New mermaid**，即可在該資料夾建立文件；右鍵點擊檔案則建立於其所在資料夾。同名文件會自動加上編號，不會覆寫既有內容。
 
 也可從命令面板執行 **alice-mmd: New mermaid**，或將既有 `.mmd` 文件放入筆記庫後開啟。每份文件包含一張圖，直接寫 Mermaid 語法，不加 Markdown 的三個反引號。
+
+啟用插件後，`.md` 文件中的 `mermaid` 圍欄區塊會在閱讀模式與 Live Preview 使用 alice-mmd 打包的 Mermaid／ELK 引擎渲染，與 `.mmd` 共用 YAML frontmatter 配置及渲染佇列。無需改寫區塊語言或移出文件；省略 `theme` 時跟隨 Obsidian 深淺色模式。Live Preview 中將游標移入區塊或雙擊圖表即可編輯原始碼，移出後重新顯示圖表；Source 模式保持原始碼。
 
 在 `.md` 文件的 Mermaid 代碼塊內按右鍵，選擇 **New mermaid fomr block**，可將該塊移至同目錄的獨立文件。例如 `流程.md` 會建立 `流程.mmd`，保留 Mermaid 原始碼與 frontmatter，移除 Markdown 圍欄及原代碼塊，並開啟新文件。支援原始碼、Live Preview 圖表與閱讀模式圖表的右鍵選單。若同名 `.mmd` 已存在，會改用 `流程-隨機字串.mmd`，後綴為 13 位大小寫英文字母與數字。若原 Markdown 寫入失敗（例如 `EACCES`），保留原代碼塊和已建立的 `.mmd`，並顯示錯誤；原文件仍需具備寫入權限才能完成移動。
 
@@ -83,7 +85,7 @@ flowchart TD
 
 `startOnLoad` 可傳入配置，但插件自行管理渲染，不使用網頁自動掃描流程。`securityLevel` 預設沿用 Mermaid 的 `strict`；若在文件中改為 `loose`，即採用 Mermaid 對 HTML 與互動內容的較寬鬆處理，僅對可信文件使用。
 
-本插件處理 `.mmd` 文件，不取代 Markdown 的 Mermaid 程式碼區塊，也不依賴 Mermaid Lens。
+本插件同時處理 `.mmd` 文件與 Markdown 的 Mermaid 程式碼區塊，不依賴 Mermaid Lens。停用插件後，Markdown 區塊恢復 Obsidian 內建渲染流程；已開啟的文件可重新開啟以更新顯示。
 
 ## 開發驗證
 
@@ -92,6 +94,6 @@ npm --prefix alice-mmd test
 npm --prefix alice-mmd run build
 ```
 
-自動測試涵蓋配置透傳、BOM／CRLF、錯誤處理、配置隔離、渲染序列與過期工作取消。這些測試使用引擎替身；實際 SVG、ELK、編輯儲存及多分頁行為仍需在 Obsidian 驗證。
+自動測試涵蓋配置透傳、BOM／CRLF、錯誤處理、配置隔離、渲染序列、過期工作取消、Markdown 區塊註冊、Live Preview 區塊替換與游標編輯，以及渲染元件卸載。這些測試使用引擎替身；實際 SVG、ELK、Live Preview 與內建圖表的替換優先順序、編輯儲存及多分頁行為仍需在 Obsidian 驗證。
 
 參考：[Mermaid 配置](https://mermaid.js.org/config/configuration)、[Mermaid 配置結構](https://mermaid.js.org/config/schema-docs/config)、[Obsidian API](https://github.com/obsidianmd/obsidian-api)。

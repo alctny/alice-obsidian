@@ -17,6 +17,10 @@ function load(language = 'zh-TW') {
     document: {}, Menu: class { showAtMouseEvent() {} },
     Plugin: class {
       registerEvent() {}
+      registerMarkdownCodeBlockProcessor(language, callback, sortOrder) {
+        this.codeProcessor = { language, callback, sortOrder };
+      }
+      registerEditorExtension(extension) { this.editorExtension = extension; }
       registerMarkdownPostProcessor(callback) { this.postProcessor = callback; }
       registerDomEvent(_element, type, callback, capture) {
         this.domEvents ??= {};
@@ -28,6 +32,8 @@ function load(language = 'zh-TW') {
     Notice: class { constructor(message) { notices.push(message); } },
     mermaid: { initialize() {}, registerLayoutLoaders() {} }, elkLayouts: [],
     createRenderer: () => async () => ({ svg: '<svg/>' }), parseYaml() {},
+    MermaidBlock: class { constructor(...args) { this.args = args; } },
+    livePreviewExtension: () => ({ livePreview: true }),
     setTimeout(fn) { timers.set(++nextTimer, fn); return nextTimer; },
     clearTimeout(id) { timers.delete(id); },
   });
@@ -90,6 +96,14 @@ test('registers a dedicated .mmd view and a create-file command', async () => {
   const commands = [];
   plugin.addCommand = (command) => { commands.push(command.id); };
   await plugin.onload();
+  assert.equal(plugin.codeProcessor.language, 'mermaid');
+  assert.equal(plugin.codeProcessor.sortOrder, -100);
+  const container = {};
+  let child;
+  plugin.codeProcessor.callback('flowchart TD\nA --> B', container, { addChild(value) { child = value; } });
+  assert.equal(child.args[0], container);
+  assert.equal(child.args[1], 'flowchart TD\nA --> B');
+  assert.equal(plugin.editorExtension.livePreview, true);
   assert.ok(factory({}) instanceof View);
   assert.deepEqual(commands, ['reset-zoom', 'create-mmd']);
 });
