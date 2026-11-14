@@ -7,15 +7,48 @@ import { MermaidOutline, sourcePosition } from '../src/outline.js';
 import { mermaidBlockAt } from '../src/blocks.js';
 
 const main = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
-function load(language = 'zh-TW') {
+function load(language = 'zh-TW', exportImage) {
   const timers = new Map();
   const notices = [];
+  const menus = [];
+  const exports = [];
+  const modals = [];
   let nextTimer = 0;
   const context = vm.createContext({
     MermaidOutline, sourcePosition, mermaidBlockAt, addIcon() {}, setIcon(element, icon) { element.icon = icon; },
     translate, getLanguage: () => language,
-    document: {}, Menu: class { showAtMouseEvent() {} },
+    document: {}, Menu: class {
+      constructor() { this.items = []; menus.push(this); }
+      addItem(callback) {
+        const item = {
+          setTitle(title) { this.title = title; return this; },
+          setIcon() { return this; },
+          onClick(callback) { this.click = callback; return this; },
+        };
+        callback(item);
+        this.items.push(item);
+      }
+      showAtMouseEvent(event) { this.event = event; }
+    },
+    exportPng: exportImage ?? (async (...args) => { exports.push(args); }),
+    Modal: class {
+      constructor(app) {
+        this.app = app;
+        this.containerEl = element();
+        this.modalEl = element();
+        this.contentEl = element();
+        this.contentEl.empty = () => { this.emptied = true; };
+        modals.push(this);
+      }
+      setTitle(title) { this.title = title; }
+      open() { this.onOpen(); }
+      close() { this.onClose(); }
+    },
     Plugin: class {
+      register(callback) { (this.cleanups ??= []).push(callback); }
+      async loadData() { return this.savedData ?? null; }
+      async saveData(data) { this.savedData = { ...data }; }
+      addSettingTab(tab) { this.settingTab = tab; }
       registerEvent() {}
       registerMarkdownCodeBlockProcessor(language, callback, sortOrder) {
         this.codeProcessor = { language, callback, sortOrder };
@@ -26,21 +59,45 @@ function load(language = 'zh-TW') {
         this.domEvents ??= {};
         this.domEvents[type] = { callback, capture };
       }
-    }, TextFileView: class {},
+    }, TextFileView: class {
+      register(callback) { (this.cleanups ??= []).push(callback); }
+    },
+    PluginSettingTab: class {},
+    Setting: class {
+      constructor(container) { container.setting = this; }
+      setName(name) { this.name = name; return this; }
+      setDesc(desc) { this.desc = desc; return this; }
+      addText(callback) {
+        this.text = {
+          inputEl: {},
+          setValue(value) { this.value = value; return this; },
+          onChange(callback) { this.change = callback; return this; },
+        };
+        callback(this.text);
+        return this;
+      }
+    },
+    MarkdownRenderChild: class {
+      registerDomEvent(_element, type, callback) { this[type] = callback; }
+    },
     TFolder: class { constructor(path) { this.path = path; } },
     normalizePath: path => path.replace(/\\/g, '/'),
     Notice: class { constructor(message) { notices.push(message); } },
     mermaid: { initialize() {}, registerLayoutLoaders() {} }, elkLayouts: [],
     createRenderer: () => async () => ({ svg: '<svg/>' }), parseYaml() {},
-    MermaidBlock: class { constructor(...args) { this.args = args; } },
-    livePreviewExtension: () => ({ livePreview: true }),
+    MermaidBlock: class {
+      constructor(...args) { this.args = args; }
+      load() { this.loaded = true; }
+      unload() { this.loaded = false; }
+    },
+    livePreviewExtension: (_plugin, _render, showMenu) => ({ livePreview: true, showMenu }),
     setTimeout(fn) { timers.set(++nextTimer, fn); return nextTimer; },
     clearTimeout(id) { timers.delete(id); },
   });
   vm.runInContext(main.replace(/^import .*;\n/gm, '')
     .replace('export default class AliceMmdPlugin', 'class AliceMmdPlugin') +
     '\nthis.View = MermaidView; this.PluginClass = AliceMmdPlugin;', context);
-  return { View: context.View, PluginClass: context.PluginClass, TFolder: context.TFolder, timers, notices };
+  return { View: context.View, PluginClass: context.PluginClass, TFolder: context.TFolder, timers, notices, menus, exports, modals };
 }
 
 test('file data replacement updates source and supersedes pending renders', () => {
@@ -82,10 +139,13 @@ test('closing a view invalidates in-flight work and cancels its timer', async ()
   assert.equal(timers.size, 0);
 });
 
-test('registers a dedicated .mmd view and a create-file command', async () => {
+async function loadedPlugin(savedData) {
   const { View, PluginClass } = load();
   const plugin = new PluginClass();
-  plugin.app = { workspace: { onLayoutReady() {}, getLeavesOfType() { return []; }, on() {} } };
+  plugin.savedData = savedData;
+  const events = [];
+  plugin.app = { workspace: { onLayoutReady() {}, getLeavesOfType() { return []; }, on() {},
+    trigger(name) { events.push(name); } } };
   let factory;
   plugin.registerView = (type, callback) => {
     assert.equal(type, 'alice-mmd'); factory = callback;
@@ -96,6 +156,11 @@ test('registers a dedicated .mmd view and a create-file command', async () => {
   const commands = [];
   plugin.addCommand = (command) => { commands.push(command.id); };
   await plugin.onload();
+  return { plugin, View, factory, commands, events };
+}
+
+test('registers a dedicated .mmd view and a create-file command', async () => {
+  const { plugin, View, factory, commands } = await loadedPlugin();
   assert.equal(plugin.codeProcessor.language, 'mermaid');
   assert.equal(plugin.codeProcessor.sortOrder, -100);
   const container = {};
@@ -103,9 +168,38 @@ test('registers a dedicated .mmd view and a create-file command', async () => {
   plugin.codeProcessor.callback('flowchart TD\nA --> B', container, { addChild(value) { child = value; } });
   assert.equal(child.args[0], container);
   assert.equal(child.args[1], 'flowchart TD\nA --> B');
+  assert.equal(child.args[5](), 0);
+  plugin.settings.markdownMaxHeight = 400;
+  assert.equal(child.args[5](), 400);
   assert.equal(plugin.editorExtension.livePreview, true);
   assert.ok(factory({}) instanceof View);
   assert.deepEqual(commands, ['reset-zoom', 'create-mmd']);
+});
+
+test('Markdown height setting restores, validates, persists and broadcasts changes', async () => {
+  const { plugin, events } = await loadedPlugin({ markdownMaxHeight: 400 });
+  let emptied = false;
+  plugin.settingTab.containerEl = { empty() { emptied = true; } };
+  plugin.settingTab.display();
+  assert.equal(emptied, true);
+  const setting = plugin.settingTab.containerEl.setting;
+  assert.equal(setting.name, translate('markdownMaxHeight', 'zh-TW'));
+  assert.equal(setting.text.value, '400');
+  assert.equal(setting.text.inputEl.type, 'number');
+  assert.equal(setting.text.inputEl.min, '0');
+  for (const invalid of ['-1', 'abc', 'Infinity']) {
+    await setting.text.change(invalid);
+    assert.equal(plugin.settings.markdownMaxHeight, 400);
+    assert.equal(events.length, 0);
+  }
+  for (const height of [600, 0]) {
+    await setting.text.change(String(height));
+    assert.equal(plugin.settings.markdownMaxHeight, height);
+    assert.equal(plugin.savedData.markdownMaxHeight, height);
+    assert.equal(events.at(-1), 'alice-mmd:settings-change');
+    const restored = await loadedPlugin(plugin.savedData);
+    assert.equal(restored.plugin.settings.markdownMaxHeight, height);
+  }
 });
 
 function element() {
@@ -157,6 +251,111 @@ test('double-click enters editing and repeated double-click keeps editing', asyn
   assert.equal(view.canvas.hidden, false);
   assert.equal(view.zoomControls.hidden, false);
   assert.equal(view.editor.hidden, true);
+});
+
+test('standalone preview and source menus export the current buffer with a fixed title', async () => {
+  const runtime = load('zh-TW');
+  const view = await openView(runtime);
+  view.file = { basename: '流程' };
+  for (const editing of [false, true]) {
+    view.setEditing(editing);
+    view.setViewData(`flowchart TD\nA --> ${editing ? 'C' : 'B'}`);
+    const target = editing ? view.editor : view.preview;
+    const event = { preventDefault() {}, stopPropagation() {} };
+    target.handlers.contextmenu.callback(event);
+    const menu = runtime.menus.at(-1);
+    assert.equal(menu.event, event);
+    assert.equal(menu.items[0].title, 'Export to png');
+    await menu.items[0].click();
+    const [source, container, filename] = runtime.exports.at(-1);
+    assert.equal(source, view.data);
+    assert.equal(container, view.contentEl);
+    assert.equal(filename, '流程.png');
+  }
+});
+
+test('export failures surface a localized notice', async () => {
+  const runtime = load('en', async () => { throw new Error('canvas failed'); });
+  const view = await openView(runtime);
+  view.preview.handlers.contextmenu.callback({ preventDefault() {}, stopPropagation() {} });
+  await runtime.menus[0].items[0].click();
+  assert.equal(runtime.notices[0], 'Unable to export PNG: canvas failed');
+});
+
+test('View opens the current standalone buffer and unloads the preview on close', async () => {
+  const runtime = load();
+  const view = await openView(runtime);
+  for (const editing of [false, true]) {
+    view.setEditing(editing);
+    view.setViewData(`flowchart TD\nA --> ${editing ? 'C' : 'B'}`);
+    const target = editing ? view.editor : view.preview;
+    target.handlers.contextmenu.callback({ preventDefault() {}, stopPropagation() {} });
+    runtime.menus.at(-1).items.find(item => item.title === 'View').click();
+    const modal = runtime.modals.at(-1);
+    assert.equal(modal.title, 'View');
+    assert.equal(modal.block.args[1], view.data);
+    assert.equal(modal.block.args[3], view.app.workspace);
+    assert.equal(modal.block.loaded, true);
+    modal.close();
+    assert.equal(modal.block.loaded, false);
+    assert.equal(modal.emptied, true);
+  }
+  runtime.menus.at(-1).items.find(item => item.title === 'View').click();
+  view.cleanups.at(-1)();
+  assert.equal(runtime.modals.at(-1).block.loaded, false);
+});
+
+test('Markdown source, Live Preview and reading menus export only the selected block', async () => {
+  const runtime = load('en');
+  const plugin = new runtime.PluginClass();
+  const source = '# Note\n```mermaid\nA --> B\n```\n\n```mermaid\nC --> D\n```';
+  const file = { extension: 'md', basename: 'Note' };
+  const container = { contains: () => true };
+  const editor = { cm: {}, getValue: () => source, getCursor: () => ({ line: 6 }),
+    offsetToPos: offset => ({ line: source.slice(0, offset).split('\n').length - 1 }) };
+  const view = { file, editor, contentEl: container };
+  let editorMenu;
+  plugin.app = {
+    vault: { getAbstractFileByPath: () => file },
+    workspace: {
+      onLayoutReady() {}, getLeavesOfType: () => [{ view }],
+      on(name, callback) { if (name === 'editor-menu') editorMenu = callback; },
+    },
+  };
+  plugin.registerView = plugin.registerExtensions = plugin.addCommand = () => {};
+  await plugin.onload();
+  // Use the same menu constructor as the standalone view.
+  const standalone = await openView(runtime);
+  standalone.preview.handlers.contextmenu.callback({ preventDefault() {}, stopPropagation() {} });
+  const Menu = runtime.menus[0].constructor;
+  const sourceMenu = new Menu();
+  editorMenu(sourceMenu, editor, view);
+  await sourceMenu.items.find(item => item.title === 'Export to png').click();
+  sourceMenu.items.find(item => item.title === 'View').click();
+  const event = { preventDefault() {}, stopPropagation() {} };
+  plugin.editorExtension.showMenu(event, editor.cm, source.indexOf('C --> D'));
+  await runtime.menus.at(-1).items.find(item => item.title === 'Export to png').click();
+  runtime.menus.at(-1).items.find(item => item.title === 'View').click();
+  let child;
+  plugin.postProcessor(container, {
+    sourcePath: 'Note.md', addChild(value) { child = value; },
+    getSectionInfo: () => ({ text: source, lineStart: 5 }),
+  });
+  child.contextmenu({ ...event, target: { closest: () => container } });
+  await runtime.menus.at(-1).items.find(item => item.title === 'Export to png').click();
+  runtime.menus.at(-1).items.find(item => item.title === 'View').click();
+  assert.equal(runtime.modals.length, 3);
+  for (const modal of runtime.modals) {
+    assert.equal(modal.block.args[1], 'C --> D\n');
+    assert.equal(modal.block.args[3], plugin.app.workspace);
+    modal.close();
+  }
+  assert.equal(runtime.exports.length, 3);
+  for (const [content, actualContainer, filename] of runtime.exports) {
+    assert.equal(content, 'C --> D\n');
+    assert.equal(actualContainer, container);
+    assert.equal(filename, 'Note-6.png');
+  }
 });
 
 test('zoom resizes the canvas and keeps the cursor point anchored', async () => {
@@ -699,18 +898,20 @@ test('native editor menu uses the Obsidian widget range with the cursor on an un
     await plugin.onload();
     const target = { closest: () => widget };
     plugin.domEvents.contextmenu.callback({ target: { closest: () => target } });
-    let title;
-    let click;
-    const item = {
-      setTitle(value) { title = value; return this; },
-      setIcon() { return this; },
-      onClick(callback) { click = callback; return this; },
-    };
-    editorMenu({ addItem(callback) { callback(item); } }, editor, { file });
-    assert.equal(title, 'New mermaid fomr block');
+    const items = [];
+    editorMenu({ addItem(callback) {
+      const item = {
+        setTitle(value) { this.title = value; return this; },
+        setIcon() { return this; },
+        onClick(callback) { this.click = callback; return this; },
+      };
+      callback(item);
+      items.push(item);
+    } }, editor, { file });
+    assert.deepEqual(items.map(item => item.title), ['New mermaid fomr block', 'Export to png', 'View']);
     let moved;
     plugin.moveMermaidBlock = (_file, _source, block) => { moved = block.content; };
-    click();
+    items[0].click();
     assert.equal(moved, 'A --> B\n');
     assert.equal(plugin.previewContext, null);
   }

@@ -23,6 +23,12 @@ Mermaid 與 ELK 會打包到插件，使用時不依賴 CDN 或網路。建置�
 
 啟用插件後，`.md` 文件中的 `mermaid` 圍欄區塊會在閱讀模式與 Live Preview 使用 alice-mmd 打包的 Mermaid／ELK 引擎渲染，與 `.mmd` 共用 YAML frontmatter 配置及渲染佇列。無需改寫區塊語言或移出文件；省略 `theme` 時跟隨 Obsidian 深淺色模式。Live Preview 中將游標移入區塊或雙擊圖表即可編輯原始碼，移出後重新顯示圖表；Source 模式保持原始碼。
 
+在 `.md` 的閱讀預覽與 Live Preview 中，將游標移到 Mermaid 圖表內，滾動滑鼠滾輪或使用觸控板雙指捏合即可縮放；觸控螢幕也支援雙指捏合。縮放以游標或雙指中心為基準，範圍為 5%–2000%，只影響所在圖表。放大後可按住滑鼠左鍵拖拽圖表或空白處平移視角，也可透過區塊內捲軸查看圖表；圖表連結仍可點擊，Live Preview 仍可雙擊進入編輯。其餘筆記版面維持原有高度；主題或面板寬度改變時重新渲染並保留倍率，不修改 Markdown 原始碼。
+
+在 `.mmd` 的預覽或原始碼區，以及 `.md` 的 Mermaid 區塊（原始碼、Live Preview 或閱讀模式）內按右鍵，選擇 **Export to png**，即可下載完整圖表的 PNG 圖片。圖片以兩倍解析度輸出，保留目前主題與 Mermaid 配置，不受畫面縮放或捲動裁切影響。`.mmd` 使用文件名，Markdown 區塊使用「文件名-區塊起始行號.png」。
+
+在上述右鍵選單中選擇 **View**，即可開啟鋪滿 Obsidian 視窗的圖表預覽，支援滾輪／雙指縮放與滑鼠拖拽平移。預覽使用目前的 Mermaid 原始碼與配置，不修改文件；按 Esc 或右上角關閉按鈕返回。
+
 在 `.md` 文件的 Mermaid 代碼塊內按右鍵，選擇 **New mermaid fomr block**，可將該塊移至同目錄的獨立文件。例如 `流程.md` 會建立 `流程.mmd`，保留 Mermaid 原始碼與 frontmatter，移除 Markdown 圍欄及原代碼塊，並開啟新文件。支援原始碼、Live Preview 圖表與閱讀模式圖表的右鍵選單。若同名 `.mmd` 已存在，會改用 `流程-隨機字串.mmd`，後綴為 13 位大小寫英文字母與數字。若原 Markdown 寫入失敗（例如 `EACCES`），保留原代碼塊和已建立的 `.mmd`，並顯示錯誤；原文件仍需具備寫入權限才能完成移動。
 
 ```mermaid
@@ -50,9 +56,13 @@ flowchart TD
 
 也可使用 `theme: dark`，或省略 `theme` 跟隨 Obsidian 深淺色模式。自訂 `themeVariables` 時建議使用 Mermaid 的 `base` 主題。更多範例見 [examples/elk.mmd](examples/elk.mmd)。
 
+## Markdown 圖表高度
+
+在「設定 → alice-mmd」調整 **Markdown Mermaid 最大高度（px）**，例如 `400`。此設定同時適用於 `.md` 的 Live Preview 與閱讀預覽，修改後立即生效並儲存；預設 `0` 表示不限高。較矮的圖表維持原本高度，超出上限的圖表可在區塊內捲動、拖拽與縮放。獨立 `.mmd` 文件不受此設定影響。
+
 ## 介面語言
 
-按鈕、右鍵選單、命令、無障礙標籤與插件提示跟隨 Obsidian 的語言設定，支援繁體中文、簡體中文與英文；其他語言顯示英文。單一模式按鈕依目前模式顯示圖示搭配 `Preview`／`Source`，新建選單與命令固定使用 `New mermaid`。Mermaid 引擎本身的錯誤文字保留原文。
+按鈕、右鍵選單、命令、無障礙標籤與插件提示跟隨 Obsidian 的語言設定，支援繁體中文、簡體中文與英文；其他語言顯示英文。單一模式按鈕依目前模式顯示圖示搭配 `Preview`／`Source`，新建選單與命令固定使用 `New mermaid`，PNG 匯出選單固定使用 `Export to png`。Mermaid 引擎本身的錯誤文字保留原文。
 
 ## 編輯與縮放
 

@@ -28,7 +28,26 @@
 .alice-mmd-staging { position: absolute; left: 0; top: 0; width: 100%; visibility: hidden; pointer-events: none; }
 .alice-mmd-error { white-space: pre-wrap; color: var(--text-error); user-select: text; }
 .alice-mmd-block { position: relative; min-height: 32px; overflow-x: auto; }
-.alice-mmd-block > div > svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.alice-mmd-block-viewport {
+  overflow: auto; overscroll-behavior: contain; overflow-anchor: none;
+  touch-action: pan-x pan-y; cursor: grab;
+}
+.alice-mmd-block-viewport.is-panning { cursor: grabbing; }
+.alice-mmd-block-diagram, .alice-mmd-block-diagram * { user-select: none; -webkit-user-drag: none; }
+.alice-mmd-block-diagram { margin: 0 auto; }
+.modal-container.alice-mmd-fullscreen-container { padding: 0; }
+.modal.alice-mmd-fullscreen {
+  width: 100%; height: 100%; max-width: none; max-height: none;
+  margin: 0; border-radius: 0; display: flex; flex-direction: column;
+}
+.alice-mmd-fullscreen .modal-content.alice-mmd-block {
+  flex: 1; min-height: 0; overflow: hidden;
+}
+.alice-mmd-fullscreen .alice-mmd-block-viewport {
+  height: 100% !important; max-height: none;
+}
+.alice-mmd-block > .alice-mmd-staging > svg,
+.alice-mmd-block-diagram > svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
 .alice-mmd-view [hidden] { display: none; }
 
 .alice-mmd-preview.is-panning { cursor: grabbing; }

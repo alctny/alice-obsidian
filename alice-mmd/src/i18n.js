@@ -1,4 +1,7 @@
 const en = {
+  markdownMaxHeight: 'Markdown Mermaid maximum height (px)',
+  markdownMaxHeightDesc: 'Limit Mermaid block height in Live Preview and reading view. Use 0 for no limit; scroll or drag to see the rest of the diagram.',
+  exportError: 'Unable to export PNG: ',
   filename: 'File name', renameError: 'Unable to rename Mermaid file: ', invalidFilename: 'Enter a valid file name without a folder path.',
   edit: 'Source', preview: 'Preview',
   zoomOut: 'Zoom out', zoomIn: 'Zoom in', resetZoom: 'Reset zoom to 100%',
@@ -15,6 +18,9 @@ const en = {
   invalidConfig: 'config must be a YAML object.',
 };
 const zhTW = {
+  markdownMaxHeight: 'Markdown Mermaid 最大高度（px）',
+  markdownMaxHeightDesc: '限制 Live Preview 與閱讀預覽中的 Mermaid 區塊高度。0 表示不限高；超出部分可捲動或拖拽查看。',
+  exportError: '無法匯出 PNG：',
   filename: '文件名', renameError: '無法重新命名 Mermaid 文件：', invalidFilename: '請輸入有效的文件名，不可包含目錄路徑。',
   edit: 'Source', preview: 'Preview',
   zoomOut: '縮小圖表', zoomIn: '放大圖表', resetZoom: '重設縮放為 100%',
@@ -31,6 +37,9 @@ const zhTW = {
   invalidConfig: 'config 必須是 YAML 物件。',
 };
 const zhCN = {
+  markdownMaxHeight: 'Markdown Mermaid 最大高度（px）',
+  markdownMaxHeightDesc: '限制 Live Preview 与阅读预览中的 Mermaid 区块高度。0 表示不限高；超出部分可滚动或拖拽查看。',
+  exportError: '无法导出 PNG：',
   filename: '文件名', renameError: '无法重命名 Mermaid 文件：', invalidFilename: '请输入有效的文件名，不可包含目录路径。',
   edit: 'Source', preview: 'Preview',
   zoomOut: '缩小图表', zoomIn: '放大图表', resetZoom: '重置缩放为 100%',

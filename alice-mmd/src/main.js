@@ -1,4 +1,4 @@
-import { Plugin, TextFileView, TFolder, Menu, MarkdownRenderChild, Notice, parseYaml, normalizePath, getLanguage, addIcon, setIcon } from 'obsidian';
+import { Plugin, PluginSettingTab, Setting, TextFileView, TFolder, Menu, Modal, MarkdownRenderChild, Notice, parseYaml, normalizePath, getLanguage, addIcon, setIcon } from 'obsidian';
 import mermaid from 'mermaid';
 import elkLayouts from '@mermaid-js/layout-elk';
 import { createRenderer } from './renderer.js';
@@ -6,6 +6,7 @@ import { translate } from './i18n.js';
 import { MermaidOutline, sourcePosition } from './outline.js';
 import { mermaidBlockAt } from './blocks.js';
 import { MermaidBlock, livePreviewExtension } from './markdown.js';
+import { exportPng } from './export.js';
 
 const VIEW_TYPE = 'alice-mmd';
 const MERMAID_ICON = 'alice-mmd-mermaid';
@@ -14,6 +15,76 @@ mermaid.initialize({ startOnLoad: false });
 mermaid.registerLayoutLoaders(elkLayouts);
 const t = (key) => translate(key, getLanguage());
 const render = createRenderer(mermaid, parseYaml, getLanguage);
+
+class AliceMmdSettingTab extends PluginSettingTab {
+  constructor(app, plugin) {
+    super(app, plugin);
+    this.plugin = plugin;
+  }
+
+  display() {
+    this.containerEl.empty();
+    new Setting(this.containerEl)
+      .setName(t('markdownMaxHeight'))
+      .setDesc(t('markdownMaxHeightDesc'))
+      .addText(text => {
+        text.inputEl.type = 'number';
+        text.inputEl.min = '0';
+        text.inputEl.step = '1';
+        text.setValue(String(this.plugin.settings.markdownMaxHeight))
+          .onChange(async value => {
+            const height = Number(value);
+            if (!Number.isFinite(height) || height < 0) return;
+            this.plugin.settings.markdownMaxHeight = height;
+            await this.plugin.saveSettings();
+          });
+      });
+  }
+}
+
+function addExportMenuItem(menu, source, container, filename) {
+  menu.addItem(item => item
+    .setTitle('Export to png')
+    .setIcon('image-down')
+    .onClick(async () => {
+      try {
+        await exportPng(source, container, filename, render);
+      } catch (error) {
+        new Notice(`${t('exportError')}${error.message ?? error}`);
+      }
+    }));
+}
+
+class MermaidPreviewModal extends Modal {
+  constructor(app, source) {
+    super(app);
+    this.source = source;
+  }
+
+  onOpen() {
+    this.containerEl.addClass('alice-mmd-fullscreen-container');
+    this.modalEl.addClass('alice-mmd-fullscreen');
+    this.setTitle('View');
+    this.block = new MermaidBlock(this.contentEl, this.source, render, this.app.workspace);
+    this.block.load();
+  }
+
+  onClose() {
+    this.block?.unload();
+    this.contentEl.empty();
+  }
+}
+
+function addViewMenuItem(menu, source, owner) {
+  menu.addItem(item => item
+    .setTitle('View')
+    .setIcon('maximize')
+    .onClick(() => {
+      const modal = new MermaidPreviewModal(owner.app, source);
+      owner.register(() => modal.close());
+      modal.open();
+    }));
+}
 
 class MermaidView extends TextFileView {
   data = '';
@@ -94,6 +165,16 @@ class MermaidView extends TextFileView {
     this.errorEl.hidden = true;
     const canvas = this.canvas = this.contentEl.createDiv({ cls: 'alice-mmd-canvas' });
     this.preview = canvas.createDiv({ cls: 'alice-mmd-preview' });
+    for (const element of [this.preview, this.editor]) {
+      element.addEventListener('contextmenu', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        const menu = new Menu();
+        addExportMenuItem(menu, this.data, this.contentEl, `${this.getDisplayText()}.png`);
+        addViewMenuItem(menu, this.data, this);
+        menu.showAtMouseEvent(event);
+      });
+    }
     this.miniMap = canvas.createDiv({ cls: 'alice-mmd-minimap', attr: { 'aria-label': t('minimap') } });
     this.miniMap.hidden = true;
     this.miniMap.addEventListener('pointerenter', () => {
@@ -475,10 +556,13 @@ class MermaidView extends TextFileView {
 
 export default class AliceMmdPlugin extends Plugin {
   async onload() {
+    this.settings = Object.assign({ markdownMaxHeight: 0 }, await this.loadData());
+    this.addSettingTab(new AliceMmdSettingTab(this.app, this));
     addIcon(MERMAID_ICON, MERMAID_SVG);
     // Run before the built-in reading-mode processor consumes code.language-mermaid.
     this.registerMarkdownCodeBlockProcessor('mermaid', (source, element, context) => {
-      context.addChild(new MermaidBlock(element, source, render, this.app.workspace));
+      context.addChild(new MermaidBlock(element, source, render, this.app.workspace,
+        undefined, () => this.settings.markdownMaxHeight));
     }, -100);
     this.registerEditorExtension(livePreviewExtension(this, render, (event, cm, from) => {
       const view = this.app.workspace.getLeavesOfType('markdown')
@@ -490,7 +574,7 @@ export default class AliceMmdPlugin extends Plugin {
       event.preventDefault();
       event.stopPropagation();
       const menu = new Menu();
-      this.addBlockMenuItem(menu, view.file, source, block, view.editor);
+      this.addBlockMenuItem(menu, view.file, source, block, view.editor, view.contentEl);
       menu.showAtMouseEvent(event);
     }));
     this.outline = new MermaidOutline(this.app, VIEW_TYPE);
@@ -535,7 +619,7 @@ export default class AliceMmdPlugin extends Plugin {
       const block = clicked?.editor === editor && clicked.source === source
         ? clicked.block : mermaidBlockAt(source, editor.getCursor().line);
       this.previewContext = null;
-      if (block) this.addBlockMenuItem(menu, view.file, source, block, editor);
+      if (block) this.addBlockMenuItem(menu, view.file, source, block, editor, view.contentEl);
     }));
     const previewContextMenu = (event) => {
       this.previewContext = null;
@@ -610,17 +694,25 @@ export default class AliceMmdPlugin extends Plugin {
         event.preventDefault();
         event.stopPropagation();
         const menu = new Menu();
-        this.addBlockMenuItem(menu, file, section.text, block);
+        this.addBlockMenuItem(menu, file, section.text, block, undefined, element);
         menu.showAtMouseEvent(event);
       }, true);
     });
   }
 
-  addBlockMenuItem(menu, file, source, block, editor) {
+  async saveSettings() {
+    await this.saveData(this.settings);
+    this.app.workspace.trigger('alice-mmd:settings-change');
+  }
+
+  addBlockMenuItem(menu, file, source, block, editor, container = editor?.cm?.dom ?? document.body) {
     menu.addItem((item) => item
       .setTitle('New mermaid fomr block')
       .setIcon(MERMAID_ICON)
       .onClick(() => this.moveMermaidBlock(file, source, block, editor)));
+    const line = source.slice(0, block.start).split('\n').length;
+    addExportMenuItem(menu, block.content, container, `${file.basename}-${line}.png`);
+    addViewMenuItem(menu, block.content, this);
   }
 
   async moveMermaidBlock(file, source, block, editor) {
