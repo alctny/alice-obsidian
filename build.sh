@@ -5,6 +5,9 @@ set -euo pipefail
 project_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd -- "$project_dir"
 
+echo "Installing alice-mmd dependencies…"
+npm --prefix alice-mmd ci --include=dev
+
 echo "Building alice-mindnight…"
 node alice-mindnight/scripts/build.mjs build
 

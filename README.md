@@ -185,7 +185,7 @@ npm run build
 
 ### 分開建置
 
-在專案根目錄執行 `./build.sh`，即可一次建置主題與插件；需要 Node.js 20 以上版本。腳本可從任意目錄呼叫，任一步驟失敗時會停止，成功後列出產物路徑。
+在專案根目錄執行 `./build.sh`，即可一次建置主題與插件；需要 Node.js 20 以上版本。腳本會先依 `alice-mmd/package-lock.json` 安裝完整依賴（含開發依賴），再開始建置。腳本可從任意目錄呼叫，任一步驟失敗時會停止，成功後列出產物路徑。
 
 - `npm run build:theme`：只產生 `dist/alice-mindnight/` 主題安裝包。
 - `npm run build:plugin`：產生 `dist/alice-sidebar/` 與 `dist/alice-mmd/` 插件安裝包。
@@ -198,6 +198,6 @@ npm run build
 
 [alice-mmd](alice-mmd/README.md) 提供 `.mmd` 文件的圖表檢視與原始碼編輯，並接管 `.md` 文件中 Mermaid 區塊的閱讀模式與 Live Preview 渲染，支援 Mermaid YAML frontmatter `config`，內建 ELK。
 
-首次建置先執行 `npm --prefix alice-mmd install`；之後 `npm run build` 或 `./build.sh` 會同時產生主題、側欄及 Mermaid 插件。單獨建置可使用 `npm run build:mmd`。`./install.sh /absolute/path/to/vault` 也會安裝 `alice-mmd`。
+執行 `./build.sh` 會自動安裝依賴並同時產生主題、側欄及 Mermaid 插件。若使用 `npm run build` 或單獨建置的 `npm run build:mmd`，首次建置須先執行 `npm --prefix alice-mmd ci --include=dev`。`./install.sh /absolute/path/to/vault` 也會安裝 `alice-mmd`。
 
 主題與 alice-sidebar 的單獨建置仍不需要第三方依賴；alice-mmd 需要安裝 Mermaid、ELK 與 esbuild。
